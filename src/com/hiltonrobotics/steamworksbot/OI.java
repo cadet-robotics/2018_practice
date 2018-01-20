@@ -7,9 +7,13 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -51,4 +55,10 @@ public class OI {
 	public static Joystick joystick = new Joystick(0);
 	
 	public static DoubleSolenoid solenoid = new DoubleSolenoid(0, 1);
+	
+	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	
+	public static PowerDistributionPanel panel = new PowerDistributionPanel();
+	
+	public static PWMVictorSPX motor = new PWMVictorSPX(0);
 }

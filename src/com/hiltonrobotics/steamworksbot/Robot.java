@@ -106,6 +106,8 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
+		
+		OI.gyro.calibrate();
 	}
 
 	/**
@@ -115,12 +117,7 @@ public class Robot extends TimedRobot {
 	private int ticks = 0;
 	private int state = -1;
 	
-	@Override
-	public void teleopPeriodic() {
-		//Scheduler.getInstance().run();
-		//System.out.println(String.valueOf(OI.sensorDist.distMM()));
-		//OI.servo.setAngle(OI.joystick.getY() * 10 + 90);
-		//OI.servo.setAngle(OI.joystick.getY() * 4000);
+	public void periodicActuator() {
 		if ((ticks % 100) == 0) {
 			state = (state + 1) % 2;
 			switch (state) {
@@ -135,6 +132,21 @@ public class Robot extends TimedRobot {
 			case 1: OI.solenoid.set(DoubleSolenoid.Value.kReverse); break;
 		}
 		++ticks;
+	}
+	
+	public void periodicGyro() {
+		System.out.println(OI.gyro.getRate());
+	}
+	
+	@Override
+	public void teleopPeriodic() {
+		//Scheduler.getInstance().run();
+		//System.out.println(String.valueOf(OI.sensorDist.distMM()));
+		//OI.servo.setAngle(OI.joystick.getY() * 10 + 90);
+		//OI.servo.setAngle(OI.joystick.getY() * 4000);
+		
+		OI.motor.setSpeed(0.5);
+		System.out.println(OI.panel.getTotalPower());
 	}
 
 	/**
