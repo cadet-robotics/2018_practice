@@ -8,7 +8,6 @@
 package com.hiltonrobotics.steamworksbot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 /*import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -36,12 +35,17 @@ public class Robot extends TimedRobot {
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
+	public static final int RHO_TRANSFORM_VALUE = (int) Math.ceil(Math.sqrt(640 * 640 + 480 * 480));
+	public static AutoCamManager camManager = null;
+	
 	@Override
 	public void robotInit() {
 		/*m_oi = new OI();
 		m_chooser.addDefault("Default Auto", new ExampleCommand());*/
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
+		camManager = AutoCamManager.getInstance();
+		OI.gyro.calibrate();
 	}
 
 	/**
@@ -106,8 +110,6 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
-		
-		OI.gyro.calibrate();
 	}
 
 	/**
@@ -135,7 +137,7 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void periodicGyro() {
-		System.out.println(OI.gyro.getRate());
+		System.out.println(OI.gyro.getAngle());
 	}
 	
 	@Override
@@ -145,8 +147,10 @@ public class Robot extends TimedRobot {
 		//OI.servo.setAngle(OI.joystick.getY() * 10 + 90);
 		//OI.servo.setAngle(OI.joystick.getY() * 4000);
 		
-		OI.motor.setSpeed(0.5);
-		System.out.println(OI.panel.getTotalPower());
+		//periodicGyro();
+		
+		//OI.motor.setSpeed(0.5);
+		//System.out.println(OI.panel.getTotalPower());
 	}
 
 	/**
