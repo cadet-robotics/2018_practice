@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
-	public static final int RHO_TRANSFORM_VALUE = (int) Math.ceil(Math.sqrt(640 * 640 + 480 * 480));
 	public static AutoCamManager camManager = null;
 	
 	@Override
@@ -45,7 +44,7 @@ public class Robot extends TimedRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		camManager = AutoCamManager.getInstance();
-		OI.gyro.calibrate();
+		//OI.gyro.calibrate();
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class Robot extends TimedRobot {
 	private int state = -1;
 	
 	public void periodicActuator() {
-		if ((ticks % 100) == 0) {
+	/*	if ((ticks % 100) == 0) {
 			state = (state + 1) % 2;
 			switch (state) {
 				case 0: System.out.println("forward"); break;
@@ -133,11 +132,11 @@ public class Robot extends TimedRobot {
 			//case 1: OI.solenoid.set(DoubleSolenoid.Value.kOff); break;
 			case 1: OI.solenoid.set(DoubleSolenoid.Value.kReverse); break;
 		}
-		++ticks;
+		++ticks;*/
 	}
 	
 	public void periodicGyro() {
-		System.out.println(OI.gyro.getAngle());
+		//System.out.println(OI.gyro.getAngle());
 	}
 	
 	@Override

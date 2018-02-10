@@ -48,17 +48,17 @@ public class OI {
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
 	
-	public static MB1013 sensorDist = new MB1013(0);
+	//public static MB1013 sensorDist = new MB1013(0);
 	
-	public static Servo servo = new Servo(2);
+	//public static Servo servo = new Servo(2);
 	
-	public static Joystick joystick = new Joystick(0);
+	//public static Joystick joystick = new Joystick(0);
 	
-	public static DoubleSolenoid solenoid = new DoubleSolenoid(0, 1);
+	//public static DoubleSolenoid solenoid = new DoubleSolenoid(0, 1);
 	
-	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	//public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 	
-	public static PowerDistributionPanel panel = new PowerDistributionPanel();
+	//public static PowerDistributionPanel panel = new PowerDistributionPanel();
 	
-	public static PWMVictorSPX motor = new PWMVictorSPX(0);
+	//public static PWMVictorSPX motor = new PWMVictorSPX(0);
 }
