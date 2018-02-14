@@ -32,82 +32,29 @@ public class AutoCamManager {
 	public static final Scalar COLOR_WHITE = new Scalar(255, 255, 255);
 	public static final Scalar COLOR_RED = new Scalar(0, 0, 255);
 	
+	public static final CamType CAM = CamType.CAM_LIFE_CINEMA;
+	
 	public static double RATIO_SCORE_THRESH = 0.5;
 	
 	private AutoCamManager() {
-		CameraServer camServer = CameraServer.getInstance();
-		UsbCamera cam = camServer.startAutomaticCapture();
-		cam.setExposureAuto();
-		cam.setResolution(640, 480);
-		
-		CvSink in = camServer.getVideo();
-		CvSource out = camServer.putVideo("auto", 640, 480);
-		
-		Mat m1 = new Mat();
-		Mat m2 = new Mat();
-		Mat m3 = new Mat();
-		ArrayList<MatOfPoint> contours = new ArrayList<>();
-		//MatOfPoint2f cTemp2 = new MatOfPoint2f();
-		ArrayList<MatOfPoint> contoursFilter = new ArrayList<>();
-		autoThread = new Thread(() -> {
-			while (!Thread.interrupted()) {
-				in.grabFrame(m1);
-				if (!m1.empty()) {
-					Imgproc.cvtColor(m1, m2, Imgproc.COLOR_BGR2HLS);
-					Core.inRange(m2, FILTER_LOW, FILTER_HIGH, m3);
-					Imgproc.cvtColor(m3, m2, Imgproc.COLOR_GRAY2BGR);
-					//Core.bitwise_or(m1, m2, m3);
-					Imgproc.GaussianBlur(m2, m3, new Size(5, 5), 0);
-					Imgproc.threshold(m3, m2, 60, 255, Imgproc.THRESH_BINARY);
-					Imgproc.cvtColor(m3, m2, Imgproc.COLOR_BGR2GRAY);
-					//Imgproc.HoughLines(m2, m3, RHO_TRANSFORM_VALUE, 90, 90);
-					Imgproc.findContours(m2, contours, m3, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-					Imgproc.rectangle(m1, new Point(0, 0), new Point(640, 480), new Scalar(0, 0, 0), -1);
-					for (MatOfPoint c : contours) {
-						//MatOfPoint2f cTemp1 = new MatOfPoint2f(c.toArray());
-						//Imgproc.approxPolyDP(cTemp1, cTemp2, Imgproc.arcLength(cTemp1, true) / 1000, true);
-						//if (Imgproc.contourArea(cTemp2) > 500 || true) contoursFilter.add(new MatOfPoint(cTemp2.toArray()));
-						MatOfInt convex = new MatOfInt();
-						if (Imgproc.contourArea(c) >= 50) {
-							//contoursFilter.add(c);
-							MatOfPoint convexM1 = new MatOfPoint();
-							Imgproc.convexHull(c, convex, false);
-							convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2);
-							for (int i = 0; i < convex.size().height; ++i) {
-								int j = (int) convex.get(i, 0)[0];
-								convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]});
-							}
-							//MatOfPoint convexM2 = new MatOfPoint();
-							RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray()));
-							double score = scoreRectRatio(r);
-							if (score <= RATIO_SCORE_THRESH) {
-								Point[] box = new Point[4];
-								r.points(box);
-								for (int i = 0; i < 4; i++) {
-									Imgproc.line(m1, box[i], box[(i + 1) % 4], COLOR_WHITE);//(score <= RATIO_SCORE_THRESH) ? COLOR_WHITE : COLOR_RED);
-								}
-								Imgproc.putText(m1, String.format("%f", score), r.center, 0, 1, COLOR_WHITE);
-							}
-						}
-					}
-					
-					Imgproc.drawContours(m1, contoursFilter, -1, COLOR_WHITE);
-					contours.clear();
-					contoursFilter.clear();
-					out.putFrame(m1);
-				}
-			}
-		});
-		autoThread.setDaemon(true);
+		autoThread = new CamManagerThread();
 		autoThread.start();
 	}
 	
 	public static final double RECTANGLE_TARGET_RATIO = 8;
+	public static final double RECTANGLE_DUAL_DIST = 6;
+	public static final double RECTANGLE_SIDE_DIST_RATIO = RECTANGLE_TARGET_RATIO / RECTANGLE_DUAL_DIST;
+	
 	
 	public static double scoreRectRatio(RotatedRect r) {
 		double rat = r.size.height / r.size.width;
 		if (rat < 1) rat = 1 / rat;
 		return Math.abs(rat / RECTANGLE_TARGET_RATIO - 1);
+	}
+	
+	public static double scoreDualRectRatio(RotatedRect r1, RotatedRect r2) {
+		double sAdv = (Math.max(r1.size.width, r1.size.height) + Math.max(r2.size.width, r2.size.height)) / 2;
+		return Math.abs(dist(r1.center, r2.center) * RECTANGLE_SIDE_DIST_RATIO / sAdv - 1);
 	}
 	
 	public static double scoreRectDual(RotatedRect r1, RotatedRect r2) {
@@ -179,17 +126,121 @@ public class AutoCamManager {
 	}*/
 	
 	public static double distSq(Point p1, Point p2) {
-		double dx = Math.abs(p1.x - p2.x);
-		double dy = Math.abs(p1.y - p2.y);
+		double dx = p1.x - p2.x;
+		double dy = p1.y - p2.y;
 		return dx * dx + dy * dy;
 	}
 	
 	public static double dist(Point p1, Point p2) {
-		return Math.sqrt(dist(p1, p2));
+		return Math.sqrt(distSq(p1, p2));
 	}
 	
 	public static AutoCamManager getInstance() {
 		if (instance == null) instance = new AutoCamManager();
 		return instance;
+	}
+}
+
+class CamManagerThread extends Thread {
+	private static CameraServer camServer;
+	private static UsbCamera cam;
+	
+	private static CvSink in; // from camera to robot
+	private static CvSource out; // to computer from robot
+	
+	/* These are like registers because assembly is like a security blanket */
+	/* Matrixes that store image data */
+	private Mat m1 = new Mat();
+	private Mat m2 = new Mat();
+	private Mat m3 = new Mat();
+	
+	private ArrayList<MatOfPoint> contours = new ArrayList<>(); // shapes
+	//MatOfPoint2f cTemp2 = new MatOfPoint2f();
+	private ArrayList<MatOfPoint> contoursFilter = new ArrayList<>(); // filtered shapes
+	private ArrayList<RotatedRect> targets = new ArrayList<>(); // found rectangles that fill criteria
+	
+	private static boolean isInit = false;
+	private static void init() {
+		if (isInit) return;
+		isInit = true;
+		camServer = CameraServer.getInstance();
+		cam = camServer.startAutomaticCapture();
+		cam.setExposureAuto();
+		cam.setResolution(640, 480);
+		
+		in = camServer.getVideo();
+		out = camServer.putVideo("auto", 640, 480);
+	}
+	
+	public CamManagerThread() {
+		init();
+		this.setDaemon(true); // This thread will close when the original does
+	}
+	
+	@Override
+	public void run() {
+		while (!Thread.interrupted()) {
+			in.grabFrame(m1);
+			if (!m1.empty()) {
+				Imgproc.cvtColor(m1, m2, Imgproc.COLOR_BGR2HLS);											// Change color scheme from BGR to HSL
+				Core.inRange(m2, AutoCamManager.FILTER_LOW, AutoCamManager.FILTER_HIGH, m3);				// Filter colors with <250 lightness
+				Imgproc.cvtColor(m3, m2, Imgproc.COLOR_GRAY2BGR);											// Convert grayscale back to BGR
+				//Core.bitwise_or(m1, m2, m3);
+				Imgproc.GaussianBlur(m2, m3, new Size(5, 5), 0);											// Blur
+				Imgproc.threshold(m3, m2, 60, 255, Imgproc.THRESH_BINARY);									// Turn colors <60 black, >=60 white
+				Imgproc.cvtColor(m3, m2, Imgproc.COLOR_BGR2GRAY);											// Convert BGR to grayscale
+				//Imgproc.HoughLines(m2, m3, RHO_TRANSFORM_VALUE, 90, 90);
+				Imgproc.findContours(m2, contours, m3, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);	// Find shapes
+				Imgproc.rectangle(m1, new Point(0, 0), new Point(640, 480), new Scalar(0, 0, 0), -1);		// Clear m1
+				for (MatOfPoint c : contours) {
+					//MatOfPoint2f cTemp1 = new MatOfPoint2f(c.toArray());
+					//Imgproc.approxPolyDP(cTemp1, cTemp2, Imgproc.arcLength(cTemp1, true) / 1000, true);
+					//if (Imgproc.contourArea(cTemp2) > 500 || true) contoursFilter.add(new MatOfPoint(cTemp2.toArray()));
+					/* calculates convex hulls */
+					MatOfInt convex = new MatOfInt();
+					if (Imgproc.contourArea(c) >= 50) {
+						//contoursFilter.add(c);
+						MatOfPoint convexM1 = new MatOfPoint();
+						Imgproc.convexHull(c, convex, false);
+						convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2);
+						for (int i = 0; i < convex.size().height; ++i) {
+							int j = (int) convex.get(i, 0)[0];
+							convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]});
+						}
+						//MatOfPoint convexM2 = new MatOfPoint();
+						RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray()));
+						double score = AutoCamManager.scoreRectRatio(r);
+						if (score <= AutoCamManager.RATIO_SCORE_THRESH) {
+							targets.add(r);
+							Point[] box = new Point[4];
+							r.points(box);
+							for (int i = 0; i < 4; i++) {
+								Imgproc.line(m1, box[i], box[(i + 1) % 4], AutoCamManager.COLOR_WHITE);//(score <= RATIO_SCORE_THRESH) ? COLOR_WHITE : COLOR_RED);
+							}
+							Imgproc.putText(m1, String.format("%f", score), r.center, 0, 1, AutoCamManager.COLOR_WHITE);
+						}
+					}
+				}
+				if (targets.size() > 2) {
+					double bestScore = 0;
+					int[] best = new int[2];
+					for (int start = 1; start < targets.size(); ++start) {
+						for (int i = start; i < targets.size(); ++i) {
+							double s = AutoCamManager.scoreDualRectRatio(targets.get(start - 1), targets.get(i));
+							if (s > bestScore) {
+								bestScore = s;
+								best[0] = start - 1;
+								best[1] = i;
+							}
+						}
+					}
+					for (int i = 0; i < 2; ++i) Imgproc.drawMarker(m1, targets.get(best[i]).center, AutoCamManager.COLOR_RED);
+				}
+				Imgproc.drawContours(m1, contoursFilter, -1, AutoCamManager.COLOR_WHITE);
+				contours.clear();
+				contoursFilter.clear();
+				out.putFrame(m1);
+			}
+		}
 	}
 }
