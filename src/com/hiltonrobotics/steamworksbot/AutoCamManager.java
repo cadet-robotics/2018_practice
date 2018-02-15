@@ -197,36 +197,40 @@ class CamManagerThread extends Thread {
 					//Imgproc.approxPolyDP(cTemp1, cTemp2, Imgproc.arcLength(cTemp1, true) / 1000, true);
 					//if (Imgproc.contourArea(cTemp2) > 500 || true) contoursFilter.add(new MatOfPoint(cTemp2.toArray()));
 					/* calculates convex hulls */
-					MatOfInt convex = new MatOfInt();
 					if (Imgproc.contourArea(c) >= 50) {
-						//contoursFilter.add(c);
+						MatOfInt convex = new MatOfInt();
 						MatOfPoint convexM1 = new MatOfPoint();
 						Imgproc.convexHull(c, convex, false);
-						convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2);
+						convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2); // Create empty contour
 						for (int i = 0; i < convex.size().height; ++i) {
 							int j = (int) convex.get(i, 0)[0];
-							convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]});
+							convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]}); // Convex hull returns a list of points by returning their indexes in the original contour
 						}
-						//MatOfPoint convexM2 = new MatOfPoint();
-						RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray()));
-						double score = AutoCamManager.scoreRectRatio(r);
-						if (score <= AutoCamManager.RATIO_SCORE_THRESH) {
+						RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray())); // Get minimum area rectangle / rotated bounding box
+						double score = AutoCamManager.scoreRectRatio(r); // Determine how close to the expected ratio the rectangle's sides are
+						if (score <= AutoCamManager.RATIO_SCORE_THRESH) { // It's good enough
+							/* Bop it */
+							/* Twist it */
+							/* Record it */
 							targets.add(r);
+							/* Draw it */
 							Point[] box = new Point[4];
 							r.points(box);
 							for (int i = 0; i < 4; i++) {
 								Imgproc.line(m1, box[i], box[(i + 1) % 4], AutoCamManager.COLOR_WHITE);//(score <= RATIO_SCORE_THRESH) ? COLOR_WHITE : COLOR_RED);
 							}
+							/* Write it (the rectangle's "score") */
 							Imgproc.putText(m1, String.format("%f", score), r.center, 0, 1, AutoCamManager.COLOR_WHITE);
 						}
 					}
 				}
-				if (targets.size() > 2) {
+				if (targets.size() > 2) { // We found 2+ viable rectangles
+					// Find the most viable pair
 					double bestScore = 0;
 					int[] best = new int[2];
 					for (int start = 1; start < targets.size(); ++start) {
 						for (int i = start; i < targets.size(); ++i) {
-							double s = AutoCamManager.scoreDualRectRatio(targets.get(start - 1), targets.get(i));
+							double s = AutoCamManager.scoreDualRectRatio(targets.get(start - 1), targets.get(i)); // Get how well the rectangles are related
 							if (s > bestScore) {
 								bestScore = s;
 								best[0] = start - 1;
@@ -234,11 +238,15 @@ class CamManagerThread extends Thread {
 							}
 						}
 					}
+					// Draw points at their center coordinates
 					for (int i = 0; i < 2; ++i) Imgproc.drawMarker(m1, targets.get(best[i]).center, AutoCamManager.COLOR_RED);
 				}
+				// Draw shapes (accepted rectangles from earlier, with the right side ratio)
 				Imgproc.drawContours(m1, contoursFilter, -1, AutoCamManager.COLOR_WHITE);
+				// Clear array lists
 				contours.clear();
 				contoursFilter.clear();
+				// Output
 				out.putFrame(m1);
 			}
 		}
