@@ -227,7 +227,7 @@ public class Robot extends TimedRobot {
 	
 	public void setClaw() {
 		if(clawOpen) {														//Set claw open/closed
-			claw.set(DoubleSolenoid.Value.kReverse);						//TODO: test and swap kForward to kReverse if the wrong way
+			claw.set(DoubleSolenoid.Value.kReverse);
 		} else {
 			claw.set(DoubleSolenoid.Value.kForward);
 		}
@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
 		if(!clawEnd) {														//Only move with claw closed
 			clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
 			clawMotorR.setSpeed(controlThrottle * clawSpeed);
-		}																	//TODO: Get input for limit switches
+		}																	//TODO: Use input from limit switches
 		
 		trimClaw();
 	}
@@ -275,7 +275,7 @@ public class Robot extends TimedRobot {
 		dpadDown = (dpad == 135 || dpad == 180 || dpad == 225);
 		dpadLeft = (dpad == 225 || dpad == 270 || dpad == 315);
 		dpadRight = (dpad == 45 || dpad == 90 || dpad == 135);
-		//clawEnd = 														//TODO: Get input for claw hitting end if necessary
+		//clawEnd = 														//TODO: Get input for limit switches
 		
 		if(controlThrottle == -0.0078125) controlThrottle = 0;				//Correct right joystick - rest position was showing -0.0078125
 	}
