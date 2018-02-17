@@ -156,7 +156,6 @@ public class Robot extends TimedRobot {
 	JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
 	Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	Spark rightMotor = new Spark(1);										//Right-side motor for movement
-	Spark rightMotorThing2 = new Spark(6);									//Extra redundant almost useless thing that is required because the people who wired thing 2 don't know how to wire things at all
 	VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
 	VictorSP clawMotorR = new VictorSP(3);									//Motor to move the claw arm (right)
 	VictorSP liftMotor1 = new VictorSP(4);									//Motor to operate the lift (1)
@@ -216,11 +215,9 @@ public class Robot extends TimedRobot {
 			if(Math.abs(controlX) > Math.abs(controlY)) {					//Apply whichever axis is of greater absolute value
 				leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
 				rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
-				rightMotorThing2.setSpeed(controlX * moveSpeed);			//Extra redundant thing because the people who wired thing 2 don't know how to wire pwm
 			} else {
 				leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
 				rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
-				rightMotorThing2.setSpeed(-(controlY * moveSpeed));			//Extra redundant thing because the people who wired thing 2 don't know how to wire pwm
 			}
 		}
 	}
@@ -256,7 +253,6 @@ public class Robot extends TimedRobot {
 	public void resetMotors() {												//Reset motors
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
-		rightMotorThing2.setSpeed(0);
 		clawMotorL.setSpeed(0);
 		clawMotorR.setSpeed(0);
 	}
