@@ -184,38 +184,38 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void printStatuses() {
-		System.out.println("PDP Voltage: " + pdp.getVoltage());
+		System.out.println("PDP Voltage: " + OI.pdp.getVoltage());
 	}
 	
 	public void setLiftMotors() {											//Set lift motors
-		if(buttonA.get()) {													//If the A button is pressed, switch Y-Axis to be lift motor
-			liftMotor1.setSpeed(controlY * liftSpeed);
-			liftMotor2.setSpeed(controlY * liftSpeed);
+		if(OI.buttonA.get()) {													//If the A button is pressed, switch Y-Axis to be lift motor
+			OI.liftMotor1.setSpeed(controlY * liftSpeed);
+			OI.liftMotor2.setSpeed(controlY * liftSpeed);
 		}
 	}
 	
 	public void setDriveMotors() {											//Set drive motors
-		if(!buttonA.get()) {												//Only move when A isn't pressed
+		if(!OI.buttonA.get()) {												//Only move when A isn't pressed
 			if(Math.abs(controlX) > Math.abs(controlY)) {					//Apply whichever axis is of greater absolute value
-				leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
-				rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
+				OI.leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
+				OI.rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
 			} else {
-				leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
-				rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
+				OI.leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
+				OI.rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
 			}
 		}
 	}
 	
 	public void setClaw() {
 		if(clawOpen) {														//Set claw open/closed
-			claw.set(DoubleSolenoid.Value.kReverse);
+			OI.claw.set(DoubleSolenoid.Value.kReverse);
 		} else {
-			claw.set(DoubleSolenoid.Value.kForward);
+			OI.claw.set(DoubleSolenoid.Value.kForward);
 		}
 		
 		if(!clawEnd) {														//Only move with claw closed
-			clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
-			clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
+			OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
 		}																	//TODO: Use input from limit switches
 		
 		/*
@@ -236,34 +236,34 @@ public class Robot extends TimedRobot {
 	
 	public void trimClaw() {												//Trim claw arm position - separate control over motors
 		if(dpadUp) {
-			clawMotorL.setSpeed(clawMoveTrimSpeed);
+			OI.clawMotorL.setSpeed(clawMoveTrimSpeed);
 		} else if(dpadDown) {
-			clawMotorR.setSpeed(-clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(-clawMoveTrimSpeed);
 		}
 		if(dpadLeft) {
-			clawMotorR.setSpeed(clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(clawMoveTrimSpeed);
 		} else if(dpadRight) {
-			clawMotorL.setSpeed(-clawMoveTrimSpeed);
+			OI.clawMotorL.setSpeed(-clawMoveTrimSpeed);
 		}
 	}
 	
 	public void resetMotors() {												//Reset motors
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		clawMotorL.setSpeed(0);
-		clawMotorR.setSpeed(0);
+		OI.leftMotor.setSpeed(0);
+		OI.rightMotor.setSpeed(0);
+		OI.clawMotorL.setSpeed(0);
+		OI.clawMotorR.setSpeed(0);
 	}
 	
 	public void setInputs() {												//Sets variables at the start of a tick
 		gameData = DriverStation.getInstance().getGameSpecificMessage();	//Get game data string
 		
-		controlX = controller.getX();										//Get X-Axis
-		controlY = controller.getY();										//Get Y-Axis
-		controlThrottle = controller.getThrottle();							//Get Throttle-Axis
+		controlX = OI.controller.getX();										//Get X-Axis
+		controlY = OI.controller.getY();										//Get Y-Axis
+		controlThrottle = OI.controller.getThrottle();							//Get Throttle-Axis
 		
-		clawOpen = buttonRT.get();											//Open claw when RT pressed
+		clawOpen = OI.buttonRT.get();											//Open claw when RT pressed
 		
-		dpad = controller.getPOV();											//Get D-pad angle
+		dpad = OI.controller.getPOV();											//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
 		dpadDown = (dpad == 135 || dpad == 180 || dpad == 225);
 		dpadLeft = (dpad == 225 || dpad == 270 || dpad == 315);
