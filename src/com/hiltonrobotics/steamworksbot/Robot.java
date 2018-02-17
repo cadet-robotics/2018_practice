@@ -181,7 +181,6 @@ public class Robot extends TimedRobot {
 	boolean dpadLeft = false;												//D-pad left button
 	boolean dpadRight = false;												//D-pad right button
 	boolean clawOpen = false;
-	boolean clawEnd = false;												//If the claw is at a limit, true
 	
 	@Override
 	public void teleopPeriodic() {
@@ -205,6 +204,8 @@ public class Robot extends TimedRobot {
 	
 	public void printStatuses() {
 		System.out.println("PDP Voltage: " + pdp.getVoltage());
+		System.out.println("Low: " + limitLow.get());
+		System.out.println("Upper: " + limitHigh.get());
 	}
 	
 	public void setLiftMotors() {											//Set lift motors
@@ -233,23 +234,17 @@ public class Robot extends TimedRobot {
 			claw.set(DoubleSolenoid.Value.kForward);
 		}
 		
-		if(!clawEnd) {														//Only move with claw closed
-			clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
-			clawMotorR.setSpeed(controlThrottle * clawSpeed);
-		}																	//TODO: Use input from limit switches
-		
-		/*
-		clawEnd = false;
-		if(!limitLow.get()) {
-			clawMotorL.setSpeed(clawSafeSpeed);
-			clawMotorR.setSpeed(-clawSafeSpeed);
-			clawEnd = true;
-		} else if(!limitHigh.get()) {
-			clawMotorL.setSpeed(-clawSafeSpeed);
-			clawMotorR.setSpeed(clawSafeSpeed);
-			clawEnd = true;
+		if(controlThrottle > 0) {											//Move arm
+			if(!limitLow.get()) {											//Only allow movement in the direction opposite a pressed limit switch
+				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			}
+		} else {
+			if(!limitHigh.get()) {
+				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			}
 		}
-		*/
 		
 		trimClaw();
 	}
