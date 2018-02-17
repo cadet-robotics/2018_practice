@@ -239,12 +239,15 @@ public class Robot extends TimedRobot {
 		}																	//TODO: Use input from limit switches
 		
 		/*
+		clawEnd = false;
 		if(!limitLow.get()) {
 			clawMotorL.setSpeed(clawSafeSpeed);
 			clawMotorR.setSpeed(-clawSafeSpeed);
+			clawEnd = true;
 		} else if(!limitHigh.get()) {
 			clawMotorL.setSpeed(-clawSafeSpeed);
 			clawMotorR.setSpeed(clawSafeSpeed);
+			clawEnd = true;
 		}
 		*/
 		
@@ -285,7 +288,6 @@ public class Robot extends TimedRobot {
 		dpadDown = (dpad == 135 || dpad == 180 || dpad == 225);
 		dpadLeft = (dpad == 225 || dpad == 270 || dpad == 315);
 		dpadRight = (dpad == 45 || dpad == 90 || dpad == 135);
-		//clawEnd = 														//TODO: Get input for limit switches
 		
 		if(controlThrottle == -0.0078125) controlThrottle = 0;				//Correct right joystick - rest position was showing -0.0078125
 	}
