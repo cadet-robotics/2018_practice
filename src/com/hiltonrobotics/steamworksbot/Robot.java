@@ -7,6 +7,7 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -154,6 +155,8 @@ public class Robot extends TimedRobot {
 	JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
 	JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
 	JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
+	DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
+	DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
@@ -171,6 +174,7 @@ public class Robot extends TimedRobot {
 	double clawSpeed = 0.6;													//Claw movement motor speed mutiplier
 	double clawMoveTrimSpeed = 0.15;										//Claw movement trim speed
 	double liftSpeed = 0.7;													//Multiplier for the lift speed
+	double clawSafeSpeed = 0.2;												//Speed for the claw to correct at limit switches
 	int dpad = 0;															//Value for the dpad 'angle'
 	boolean dpadUp = false;													//D-pad up button
 	boolean dpadDown = false;												//D-pad down button
@@ -233,6 +237,16 @@ public class Robot extends TimedRobot {
 			clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
 			clawMotorR.setSpeed(controlThrottle * clawSpeed);
 		}																	//TODO: Use input from limit switches
+		
+		/*
+		if(!limitLow.get()) {
+			clawMotorL.setSpeed(clawSafeSpeed);
+			clawMotorR.setSpeed(-clawSafeSpeed);
+		} else if(!limitHigh.get()) {
+			clawMotorL.setSpeed(-clawSafeSpeed);
+			clawMotorR.setSpeed(clawSafeSpeed);
+		}
+		*/
 		
 		trimClaw();
 	}
