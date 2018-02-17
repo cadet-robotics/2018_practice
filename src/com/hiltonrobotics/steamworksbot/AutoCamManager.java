@@ -30,6 +30,7 @@ public class AutoCamManager extends Thread {
 	
 	private static CvSink[] ins = new CvSink[2]; // from camera to robot
 	private static CvSource autoOut; // to computer from robot
+	private static CvSource distOut; // to computer from robot
 	
 	public static final CamType[] camTypes = new CamType[] {CamType.CAM_LIFE_HD_3000, CamType.CAM_LIFE_HD_3000};
 	
@@ -42,6 +43,7 @@ public class AutoCamManager extends Thread {
 			ins[i] = camServer.getVideo(cams[i]);
 		}
 		autoOut = camServer.putVideo("auto", 640, 480);
+		distOut = camServer.putVideo("dist", 640, 480);
 		this.setDaemon(true); // This thread will close when the original does
 		this.start();
 	}
@@ -70,82 +72,117 @@ public class AutoCamManager extends Thread {
 	private ArrayList<RotatedRect> targets = new ArrayList<>(); // found rectangles that fill criteria
 	
 	public static StereoBM distCalc = StereoBM.create(16, 15);
+	static {
+		// Taken and converted to java from http://www.jayrambhia.com/blog/disparity-mpas
+		//sbm.state->SADWindowSize = 9;
+		distCalc.setNumDisparities(112);
+		distCalc.setPreFilterSize(5);
+		distCalc.setPreFilterCap(61);
+		distCalc.setMinDisparity(-39);
+		distCalc.setTextureThreshold(507);
+		distCalc.setUniquenessRatio(0);
+		distCalc.setSpeckleWindowSize(0);
+		distCalc.setSpeckleRange(8);
+		distCalc.setDisp12MaxDiff(1);
+	}
+	private static Object distLock = new Object();
+	private Mat distMap = new Mat();
+	private boolean isDistUpdated = false;
+	
+	public boolean getDistUpdated() {
+		synchronized (distLock) {
+			return isDistUpdated;
+		}
+	}
+	
+	public Mat getDistMap() {
+		synchronized (distLock) {
+			return distMap.clone();
+		}
+	}
 	
 	@Override
 	public void run() {
 		while (!Thread.interrupted()) {
-			ins[0].grabFrame(m1); // Uses left camera
-			if (!m1.empty()) {
-				ins[1].grabFrame(m2);
-				if (!m2.empty()) {
-					distCalc.compute(m1, m2, m3);
-				}
-				Imgproc.cvtColor(m1, m2, Imgproc.COLOR_BGR2HLS);											// Change color scheme from BGR to HSL
-				Core.inRange(m2, FILTER_LOW, FILTER_HIGH, m3);												// Filter colors with <250 lightness
-				Imgproc.cvtColor(m3, m2, Imgproc.COLOR_GRAY2BGR);											// Convert grayscale back to BGR
-				//Core.bitwise_or(m1, m2, m3);
-				Imgproc.GaussianBlur(m2, m3, new Size(5, 5), 0);											// Blur
-				Imgproc.threshold(m3, m2, BLUR_THRESH, 255, Imgproc.THRESH_BINARY);							// Turn colors <60 black, >=60 white
-				Imgproc.cvtColor(m3, m2, Imgproc.COLOR_BGR2GRAY);											// Convert BGR to grayscale
-				//Imgproc.HoughLines(m2, m3, RHO_TRANSFORM_VALUE, 90, 90);
-				Imgproc.findContours(m2, contours, m3, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);	// Find shapes
-				Imgproc.rectangle(m1, new Point(0, 0), new Point(640, 480), new Scalar(0, 0, 0), -1);		// Clear m1
-				for (MatOfPoint c : contours) {
-					//MatOfPoint2f cTemp1 = new MatOfPoint2f(c.toArray());
-					//Imgproc.approxPolyDP(cTemp1, cTemp2, Imgproc.arcLength(cTemp1, true) / 1000, true);
-					//if (Imgproc.contourArea(cTemp2) > 500 || true) contoursFilter.add(new MatOfPoint(cTemp2.toArray()));
-					/* calculates convex hulls */
-					if (Imgproc.contourArea(c) >= 50) {
-						MatOfInt convex = new MatOfInt();
-						MatOfPoint convexM1 = new MatOfPoint();
-						Imgproc.convexHull(c, convex, false);
-						convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2); // Create empty contour
-						for (int i = 0; i < convex.size().height; ++i) {
-							int j = (int) convex.get(i, 0)[0];
-							convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]}); // Convex hull returns a list of points by returning their indexes in the original contour
-						}
-						RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray())); // Get minimum area rectangle / rotated bounding box
-						double score = AutoCamManagerUtil.scoreRectRatio(r); // Determine how close to the expected ratio the rectangle's sides are
-						if (score <= AutoCamManager.RATIO_SCORE_THRESH) { // It's good enough
-							/* Bop it */
-							/* Twist it */
-							/* Record it */
-							targets.add(r);
-							/* Draw it */
-							Point[] box = new Point[4];
-							r.points(box);
-							for (int i = 0; i < 4; i++) {
-								Imgproc.line(m1, box[i], box[(i + 1) % 4], AutoCamManagerUtil.COLOR_WHITE);//(score <= RATIO_SCORE_THRESH) ? COLOR_WHITE : COLOR_RED);
+			synchronized (distLock) {
+				ins[0].grabFrame(m1); // Uses left camera
+				if (!m1.empty()) {
+					ins[1].grabFrame(m2);
+					if (!m2.empty()) {
+						Imgproc.cvtColor(m1, m3, Imgproc.COLOR_BGR2GRAY);
+						Imgproc.cvtColor(m2, distMap, Imgproc.COLOR_BGR2GRAY);
+						distMap.copyTo(m2);
+						distCalc.compute(m3, m2, distMap);
+						distOut.putFrame(distMap);
+						isDistUpdated = true;
+					} else isDistUpdated = false;
+					Imgproc.cvtColor(m1, m2, Imgproc.COLOR_BGR2HLS);											// Change color scheme from BGR to HSL
+					Core.inRange(m2, FILTER_LOW, FILTER_HIGH, m3);												// Filter colors with <250 lightness
+					Imgproc.cvtColor(m3, m2, Imgproc.COLOR_GRAY2BGR);											// Convert grayscale back to BGR
+					//Core.bitwise_or(m1, m2, m3);
+					Imgproc.GaussianBlur(m2, m3, new Size(5, 5), 0);											// Blur
+					Imgproc.threshold(m3, m2, BLUR_THRESH, 255, Imgproc.THRESH_BINARY);							// Turn colors <60 black, >=60 white
+					Imgproc.cvtColor(m3, m2, Imgproc.COLOR_BGR2GRAY);											// Convert BGR to grayscale
+					//Imgproc.HoughLines(m2, m3, RHO_TRANSFORM_VALUE, 90, 90);
+					Imgproc.findContours(m2, contours, m3, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);	// Find shapes
+					Imgproc.rectangle(m1, new Point(0, 0), new Point(640, 480), new Scalar(0, 0, 0), -1);		// Clear m1
+					for (MatOfPoint c : contours) {
+						//MatOfPoint2f cTemp1 = new MatOfPoint2f(c.toArray());
+						//Imgproc.approxPolyDP(cTemp1, cTemp2, Imgproc.arcLength(cTemp1, true) / 1000, true);
+						//if (Imgproc.contourArea(cTemp2) > 500 || true) contoursFilter.add(new MatOfPoint(cTemp2.toArray()));
+						/* calculates convex hulls */
+						if (Imgproc.contourArea(c) >= 50) {
+							MatOfInt convex = new MatOfInt();
+							MatOfPoint convexM1 = new MatOfPoint();
+							Imgproc.convexHull(c, convex, false);
+							convexM1.create((int) convex.size().height, 1, CvType.CV_32SC2); // Create empty contour
+							for (int i = 0; i < convex.size().height; ++i) {
+								int j = (int) convex.get(i, 0)[0];
+								convexM1.put(i, 0, new double[] {c.get(j, 0)[0], c.get(j, 0)[1]}); // Convex hull returns a list of points by returning their indexes in the original contour
 							}
-							/* Write it (the rectangle's "score") */
-							Imgproc.putText(m1, String.format("%f", score), r.center, 0, 1, AutoCamManagerUtil.COLOR_WHITE);
-						}
-					}
-				}
-				if (targets.size() > 2) { // We found 2+ viable rectangles
-					// Find the most viable pair
-					double bestScore = 0;
-					int[] best = new int[2];
-					for (int start = 1; start < targets.size(); ++start) {
-						for (int i = start; i < targets.size(); ++i) {
-							double s = AutoCamManagerUtil.scoreDualRectRatio(targets.get(start - 1), targets.get(i)); // Get how well the rectangles are related
-							if (s > bestScore) {
-								bestScore = s;
-								best[0] = start - 1;
-								best[1] = i;
+							RotatedRect r = Imgproc.minAreaRect(new MatOfPoint2f(convexM1.toArray())); // Get minimum area rectangle / rotated bounding box
+							double score = AutoCamManagerUtil.scoreRectRatio(r); // Determine how close to the expected ratio the rectangle's sides are
+							if (score <= AutoCamManager.RATIO_SCORE_THRESH) { // It's good enough
+								/* Bop it */
+								/* Twist it */
+								/* Record it */
+								targets.add(r);
+								/* Draw it */
+								Point[] box = new Point[4];
+								r.points(box);
+								for (int i = 0; i < 4; i++) {
+									Imgproc.line(m1, box[i], box[(i + 1) % 4], AutoCamManagerUtil.COLOR_WHITE);//(score <= RATIO_SCORE_THRESH) ? COLOR_WHITE : COLOR_RED);
+								}
+								/* Write it (the rectangle's "score") */
+								Imgproc.putText(m1, String.format("%f", score), r.center, 0, 1, AutoCamManagerUtil.COLOR_WHITE);
 							}
 						}
 					}
-					// Draw points at their center coordinates
-					for (int i = 0; i < 2; ++i) Imgproc.drawMarker(m1, targets.get(best[i]).center, AutoCamManagerUtil.COLOR_RED);
-				}
-				// Draw shapes (accepted rectangles from earlier, with the right side ratio)
-				Imgproc.drawContours(m1, contoursFilter, -1, AutoCamManagerUtil.COLOR_WHITE);
-				// Clear array lists
-				contours.clear();
-				contoursFilter.clear();
-				// Output
-				autoOut.putFrame(m1);
+					if (targets.size() > 2) { // We found 2+ viable rectangles
+						// Find the most viable pair
+						double bestScore = 0;
+						int[] best = new int[2];
+						for (int start = 1; start < targets.size(); ++start) {
+							for (int i = start; i < targets.size(); ++i) {
+								double s = AutoCamManagerUtil.scoreDualRectRatio(targets.get(start - 1), targets.get(i)); // Get how well the rectangles are related
+								if (s > bestScore) {
+									bestScore = s;
+									best[0] = start - 1;
+									best[1] = i;
+								}
+							}
+						}
+						// Draw points at their center coordinates
+						for (int i = 0; i < 2; ++i) Imgproc.drawMarker(m1, targets.get(best[i]).center, AutoCamManagerUtil.COLOR_RED);
+					}
+					// Draw shapes (accepted rectangles from earlier, with the right side ratio)
+					Imgproc.drawContours(m1, contoursFilter, -1, AutoCamManagerUtil.COLOR_WHITE);
+					// Clear array lists
+					contours.clear();
+					contoursFilter.clear();
+					// Output
+					autoOut.putFrame(m1);
+				} else isDistUpdated = false;
 			}
 		}
 	}
