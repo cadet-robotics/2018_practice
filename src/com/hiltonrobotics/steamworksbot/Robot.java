@@ -146,26 +146,6 @@ public class Robot extends TimedRobot {
 		//System.out.println(OI.gyro.getAngle());
 	}
 	
-	Joystick controller = new Joystick(0);
-	JoystickButton buttonA = new JoystickButton(controller, 2);				//A button input
-	JoystickButton buttonB = new JoystickButton(controller, 3);				//B button input
-	JoystickButton buttonX = new JoystickButton(controller, 1);				//X button input
-	JoystickButton buttonY = new JoystickButton(controller, 4);				//Y button input
-	JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
-	JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
-	JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
-	JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
-	DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
-	DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
-	Spark leftMotor = new Spark(0); 										//Left-side motor for movement
-	Spark rightMotor = new Spark(1);										//Right-side motor for movement
-	VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
-	VictorSP clawMotorR = new VictorSP(3);									//Motor to move the claw arm (right)
-	VictorSP liftMotor1 = new VictorSP(4);									//Motor to operate the lift (1)
-	VictorSP liftMotor2 = new VictorSP(5);									//Motor to operate the lift (2)
-	DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
-	DoubleSolenoid lift = new DoubleSolenoid(2, 3);							//Double solenoid for the lift
-	PowerDistributionPanel pdp = new PowerDistributionPanel();				//PDP board object
 	String gameData = "";													//Game data string
 	double controlX = 0;													//X-Axis of left joystick
 	double controlY = 0;													//Y-Axis of left joystick
@@ -203,37 +183,42 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void printStatuses() {
+<<<<<<< HEAD
 		System.out.println("PDP Voltage: " + pdp.getVoltage());
 		System.out.println("Low: " + limitLow.get());
 		System.out.println("Upper: " + limitHigh.get());
+=======
+		System.out.println("PDP Voltage: " + OI.pdp.getVoltage());
+>>>>>>> 13bba30c28a9c12f62cdf420f895ff29a02df94b
 	}
 	
 	public void setLiftMotors() {											//Set lift motors
-		if(buttonA.get()) {													//If the A button is pressed, switch Y-Axis to be lift motor
-			liftMotor1.setSpeed(controlY * liftSpeed);
-			liftMotor2.setSpeed(controlY * liftSpeed);
+		if(OI.buttonA.get()) {													//If the A button is pressed, switch Y-Axis to be lift motor
+			OI.liftMotor1.setSpeed(controlY * liftSpeed);
+			OI.liftMotor2.setSpeed(controlY * liftSpeed);
 		}
 	}
 	
 	public void setDriveMotors() {											//Set drive motors
-		if(!buttonA.get()) {												//Only move when A isn't pressed
+		if(!OI.buttonA.get()) {												//Only move when A isn't pressed
 			if(Math.abs(controlX) > Math.abs(controlY)) {					//Apply whichever axis is of greater absolute value
-				leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
-				rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
+				OI.leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
+				OI.rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
 			} else {
-				leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
-				rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
+				OI.leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
+				OI.rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
 			}
 		}
 	}
 	
 	public void setClaw() {
 		if(clawOpen) {														//Set claw open/closed
-			claw.set(DoubleSolenoid.Value.kReverse);
+			OI.claw.set(DoubleSolenoid.Value.kReverse);
 		} else {
-			claw.set(DoubleSolenoid.Value.kForward);
+			OI.claw.set(DoubleSolenoid.Value.kForward);
 		}
 		
+<<<<<<< HEAD
 		if(controlThrottle > 0) {											//Move arm
 			if(!limitLow.get()) {											//Only allow movement in the direction opposite a pressed limit switch
 				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
@@ -244,6 +229,23 @@ public class Robot extends TimedRobot {
 				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
 				clawMotorR.setSpeed(controlThrottle * clawSpeed);
 			}
+=======
+		if(!clawEnd) {														//Only move with claw closed
+			OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
+			OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
+		}																	//TODO: Use input from limit switches
+		
+		/*
+		clawEnd = false;
+		if(!limitLow.get()) {
+			clawMotorL.setSpeed(clawSafeSpeed);
+			clawMotorR.setSpeed(-clawSafeSpeed);
+			clawEnd = true;
+		} else if(!limitHigh.get()) {
+			clawMotorL.setSpeed(-clawSafeSpeed);
+			clawMotorR.setSpeed(clawSafeSpeed);
+			clawEnd = true;
+>>>>>>> 13bba30c28a9c12f62cdf420f895ff29a02df94b
 		}
 		
 		trimClaw();
@@ -251,34 +253,34 @@ public class Robot extends TimedRobot {
 	
 	public void trimClaw() {												//Trim claw arm position - separate control over motors
 		if(dpadUp) {
-			clawMotorL.setSpeed(clawMoveTrimSpeed);
+			OI.clawMotorL.setSpeed(clawMoveTrimSpeed);
 		} else if(dpadDown) {
-			clawMotorR.setSpeed(-clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(-clawMoveTrimSpeed);
 		}
 		if(dpadLeft) {
-			clawMotorR.setSpeed(clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(clawMoveTrimSpeed);
 		} else if(dpadRight) {
-			clawMotorL.setSpeed(-clawMoveTrimSpeed);
+			OI.clawMotorL.setSpeed(-clawMoveTrimSpeed);
 		}
 	}
 	
 	public void resetMotors() {												//Reset motors
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		clawMotorL.setSpeed(0);
-		clawMotorR.setSpeed(0);
+		OI.leftMotor.setSpeed(0);
+		OI.rightMotor.setSpeed(0);
+		OI.clawMotorL.setSpeed(0);
+		OI.clawMotorR.setSpeed(0);
 	}
 	
 	public void setInputs() {												//Sets variables at the start of a tick
 		gameData = DriverStation.getInstance().getGameSpecificMessage();	//Get game data string
 		
-		controlX = controller.getX();										//Get X-Axis
-		controlY = controller.getY();										//Get Y-Axis
-		controlThrottle = controller.getThrottle();							//Get Throttle-Axis
+		controlX = OI.controller.getX();										//Get X-Axis
+		controlY = OI.controller.getY();										//Get Y-Axis
+		controlThrottle = OI.controller.getThrottle();							//Get Throttle-Axis
 		
-		clawOpen = buttonRT.get();											//Open claw when RT pressed
+		clawOpen = OI.buttonRT.get();											//Open claw when RT pressed
 		
-		dpad = controller.getPOV();											//Get D-pad angle
+		dpad = OI.controller.getPOV();											//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
 		dpadDown = (dpad == 135 || dpad == 180 || dpad == 225);
 		dpadLeft = (dpad == 225 || dpad == 270 || dpad == 315);
