@@ -8,11 +8,15 @@
 package com.hiltonrobotics.steamworksbot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
@@ -48,17 +52,24 @@ public class OI {
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
 	
-	//public static MB1013 sensorDist = new MB1013(0);
-	
-	//public static Servo servo = new Servo(2);
-	
-	//public static Joystick joystick = new Joystick(0);
-	
-	//public static DoubleSolenoid solenoid = new DoubleSolenoid(0, 1);
-	
-	//public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-	
-	//public static PowerDistributionPanel panel = new PowerDistributionPanel();
-	
-	//public static PWMVictorSPX motor = new PWMVictorSPX(0);
+	Joystick controller = new Joystick(0);
+	JoystickButton buttonA = new JoystickButton(controller, 2);				//A button input
+	JoystickButton buttonB = new JoystickButton(controller, 3);				//B button input
+	JoystickButton buttonX = new JoystickButton(controller, 1);				//X button input
+	JoystickButton buttonY = new JoystickButton(controller, 4);				//Y button input
+	JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
+	JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
+	JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
+	JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
+	DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
+	DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
+	Spark leftMotor = new Spark(0); 										//Left-side motor for movement
+	Spark rightMotor = new Spark(1);										//Right-side motor for movement
+	VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
+	VictorSP clawMotorR = new VictorSP(3);									//Motor to move the claw arm (right)
+	VictorSP liftMotor1 = new VictorSP(4);									//Motor to operate the lift (1)
+	VictorSP liftMotor2 = new VictorSP(5);									//Motor to operate the lift (2)
+	DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
+	DoubleSolenoid lift = new DoubleSolenoid(2, 3);							//Double solenoid for the lift
+	PowerDistributionPanel pdp = new PowerDistributionPanel();				//PDP board object
 }

@@ -146,26 +146,6 @@ public class Robot extends TimedRobot {
 		//System.out.println(OI.gyro.getAngle());
 	}
 	
-	Joystick controller = new Joystick(0);
-	JoystickButton buttonA = new JoystickButton(controller, 2);				//A button input
-	JoystickButton buttonB = new JoystickButton(controller, 3);				//B button input
-	JoystickButton buttonX = new JoystickButton(controller, 1);				//X button input
-	JoystickButton buttonY = new JoystickButton(controller, 4);				//Y button input
-	JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
-	JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
-	JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
-	JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
-	DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
-	DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
-	Spark leftMotor = new Spark(0); 										//Left-side motor for movement
-	Spark rightMotor = new Spark(1);										//Right-side motor for movement
-	VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
-	VictorSP clawMotorR = new VictorSP(3);									//Motor to move the claw arm (right)
-	VictorSP liftMotor1 = new VictorSP(4);									//Motor to operate the lift (1)
-	VictorSP liftMotor2 = new VictorSP(5);									//Motor to operate the lift (2)
-	DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
-	DoubleSolenoid lift = new DoubleSolenoid(2, 3);							//Double solenoid for the lift
-	PowerDistributionPanel pdp = new PowerDistributionPanel();				//PDP board object
 	String gameData = "";													//Game data string
 	double controlX = 0;													//X-Axis of left joystick
 	double controlY = 0;													//Y-Axis of left joystick
