@@ -183,17 +183,11 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void printStatuses() {
-<<<<<<< HEAD
-		System.out.println("PDP Voltage: " + pdp.getVoltage());
-		System.out.println("Low: " + limitLow.get());
-		System.out.println("Upper: " + limitHigh.get());
-=======
 		System.out.println("PDP Voltage: " + OI.pdp.getVoltage());
->>>>>>> 13bba30c28a9c12f62cdf420f895ff29a02df94b
 	}
 	
 	public void setLiftMotors() {											//Set lift motors
-		if(OI.buttonA.get()) {													//If the A button is pressed, switch Y-Axis to be lift motor
+		if(OI.buttonA.get()) {												//If the A button is pressed, switch Y-Axis to be lift motor
 			OI.liftMotor1.setSpeed(controlY * liftSpeed);
 			OI.liftMotor2.setSpeed(controlY * liftSpeed);
 		}
@@ -202,11 +196,11 @@ public class Robot extends TimedRobot {
 	public void setDriveMotors() {											//Set drive motors
 		if(!OI.buttonA.get()) {												//Only move when A isn't pressed
 			if(Math.abs(controlX) > Math.abs(controlY)) {					//Apply whichever axis is of greater absolute value
-				OI.leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
-				OI.rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
+				OI.leftMotor.setSpeed(controlX * moveSpeed);				//Turn robot
+				OI.rightMotor.setSpeed(controlX * moveSpeed);				//TODO: test and swap both to negative if wrong way
 			} else {
-				OI.leftMotor.setSpeed(controlY * moveSpeed);					//Move robot forwards/backwards
-				OI.rightMotor.setSpeed(-(controlY * moveSpeed));				//TODO: test and swap negative to leftMotor if wrong way
+				OI.leftMotor.setSpeed(controlY * moveSpeed);				//Move robot forwards/backwards
+				OI.rightMotor.setSpeed(-(controlY * moveSpeed));			//TODO: test and swap negative to leftMotor if wrong way
 			}
 		}
 	}
@@ -218,69 +212,55 @@ public class Robot extends TimedRobot {
 			OI.claw.set(DoubleSolenoid.Value.kForward);
 		}
 		
-<<<<<<< HEAD
 		if(controlThrottle > 0) {											//Move arm
-			if(!limitLow.get()) {											//Only allow movement in the direction opposite a pressed limit switch
-				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
-				clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			if(!OI.limitLow.get()) {										//Only allow movement in the direction opposite a pressed limit switch
+				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
 			}
 		} else {
-			if(!limitHigh.get()) {
-				clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
-				clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			if(!OI.limitHigh.get()) {
+				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
 			}
-=======
-		if(!clawEnd) {														//Only move with claw closed
-			OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));			//Move claw
-			OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
-		}																	//TODO: Use input from limit switches
-		
-		/*
-		clawEnd = false;
-		if(!limitLow.get()) {
-			clawMotorL.setSpeed(clawSafeSpeed);
-			clawMotorR.setSpeed(-clawSafeSpeed);
-			clawEnd = true;
-		} else if(!limitHigh.get()) {
-			clawMotorL.setSpeed(-clawSafeSpeed);
-			clawMotorR.setSpeed(clawSafeSpeed);
-			clawEnd = true;
->>>>>>> 13bba30c28a9c12f62cdf420f895ff29a02df94b
 		}
 		
 		trimClaw();
 	}
 	
-	public void trimClaw() {												//Trim claw arm position - separate control over motors
+	public void trimClaw() {												//Trim claw arm position - separate control over arm motors
 		if(dpadUp) {
 			OI.clawMotorL.setSpeed(clawMoveTrimSpeed);
 		} else if(dpadDown) {
-			OI.clawMotorR.setSpeed(-clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(clawMoveTrimSpeed);
 		}
 		if(dpadLeft) {
-			OI.clawMotorR.setSpeed(clawMoveTrimSpeed);
+			OI.clawMotorR.setSpeed(-clawMoveTrimSpeed);
 		} else if(dpadRight) {
 			OI.clawMotorL.setSpeed(-clawMoveTrimSpeed);
 		}
 	}
 	
-	public void resetMotors() {												//Reset motors
+	public void resetMotors() {												//Reset motors and solenoids
 		OI.leftMotor.setSpeed(0);
 		OI.rightMotor.setSpeed(0);
 		OI.clawMotorL.setSpeed(0);
 		OI.clawMotorR.setSpeed(0);
+		OI.liftMotor1.setSpeed(0);
+		OI.liftMotor2.setSpeed(0);
+		OI.lift.set(DoubleSolenoid.Value.kOff);
+		OI.claw.set(DoubleSolenoid.Value.kOff);
 	}
 	
 	public void setInputs() {												//Sets variables at the start of a tick
 		gameData = DriverStation.getInstance().getGameSpecificMessage();	//Get game data string
 		
-		controlX = OI.controller.getX();										//Get X-Axis
-		controlY = OI.controller.getY();										//Get Y-Axis
-		controlThrottle = OI.controller.getThrottle();							//Get Throttle-Axis
+		controlX = OI.controller.getX();									//Get X-Axis
+		controlY = OI.controller.getY();									//Get Y-Axis
+		controlThrottle = OI.controller.getThrottle();						//Get Throttle-Axis
 		
-		clawOpen = OI.buttonRT.get();											//Open claw when RT pressed
+		clawOpen = OI.buttonRT.get();										//Open claw when RT pressed
 		
-		dpad = OI.controller.getPOV();											//Get D-pad angle
+		dpad = OI.controller.getPOV();										//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
 		dpadDown = (dpad == 135 || dpad == 180 || dpad == 225);
 		dpadLeft = (dpad == 225 || dpad == 270 || dpad == 315);

@@ -52,11 +52,15 @@ public class OI {
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
 	
+	//This class is meant to be used for command based robots, as the description says
+	//According to what we've been doing we aren't using a command based robot
+	//The method I (Alex) was using before is the normal way for a timed robot, what we were doing
+	//Also this entire file is meant for a command based 2017 robot - It's outdated
 	public static Joystick controller = new Joystick(0);
-	public static JoystickButton buttonA = new JoystickButton(controller, 2);				//A button input
-	public static JoystickButton buttonB = new JoystickButton(controller, 3);				//B button input
-	public static JoystickButton buttonX = new JoystickButton(controller, 1);				//X button input
-	public static JoystickButton buttonY = new JoystickButton(controller, 4);				//Y button input
+	public static JoystickButton buttonA = new JoystickButton(controller, 2);			//A button input
+	public static JoystickButton buttonB = new JoystickButton(controller, 3);			//B button input
+	public static JoystickButton buttonX = new JoystickButton(controller, 1);			//X button input
+	public static JoystickButton buttonY = new JoystickButton(controller, 4);			//Y button input
 	public static JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
 	public static JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
 	public static JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
@@ -65,11 +69,11 @@ public class OI {
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
-	public static VictorSP clawMotorL = new VictorSP(2);									//Motor to move the claw arm (left)
-	public static VictorSP clawMotorR = new VictorSP(3);									//Motor to move the claw arm (right)
-	public static VictorSP liftMotor1 = new VictorSP(4);									//Motor to operate the lift (1)
-	public static VictorSP liftMotor2 = new VictorSP(5);									//Motor to operate the lift (2)
+	public static VictorSP clawMotorL = new VictorSP(2);								//Motor to move the claw arm (left)
+	public static VictorSP clawMotorR = new VictorSP(3);								//Motor to move the claw arm (right)
+	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
+	public static VictorSP liftMotor2 = new VictorSP(5);								//Motor to operate the lift (2)
 	public static DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
-	public static DoubleSolenoid lift = new DoubleSolenoid(2, 3);							//Double solenoid for the lift
-	public static PowerDistributionPanel pdp = new PowerDistributionPanel();				//PDP board object
+	public static DoubleSolenoid lift = new DoubleSolenoid(2, 3);						//Double solenoid for the lift
+	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
 }
