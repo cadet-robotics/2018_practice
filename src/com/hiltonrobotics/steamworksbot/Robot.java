@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
 	 * used for any initialization code.
 	 */
 	public static AutoCamManager camManager = null;
+	public static Robot instance;
 	
 	@SuppressWarnings("unused")
 	@Override
@@ -52,6 +53,9 @@ public class Robot extends TimedRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		camManager = AutoCamManager.getInstance();
+		if (instance == null) {
+			instance = this;
+		}
 		//OI.gyro.calibrate();
 	}
 
