@@ -45,7 +45,7 @@ public class AutoCamManager extends Thread {
 		autoOut = camServer.putVideo("auto", 640, 480);
 		distOut = camServer.putVideo("dist", 640, 480);
 		this.setDaemon(true); // This thread will close when the original does
-		this.start();
+		//this.start();
 	}
 	
 	public static AutoCamManager getInstance() {

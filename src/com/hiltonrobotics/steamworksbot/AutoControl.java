@@ -5,5 +5,6 @@ public class AutoControl {
 	}
 	
 	public static void init() {
+		
 	}
 }

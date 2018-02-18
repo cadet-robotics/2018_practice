@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
 	 */
 	public static AutoCamManager camManager = null;
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void robotInit() {
 		/*m_oi = new OI();
