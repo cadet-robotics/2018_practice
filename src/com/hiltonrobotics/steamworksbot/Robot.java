@@ -96,6 +96,7 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.start();
 		}*/
+		AutoControl.init();
 	}
 
 	/**
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousPeriodic() {
 		//Scheduler.getInstance().run();
+		AutoControl.runPeriodic();
 	}
 
 	@Override
