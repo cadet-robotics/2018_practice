@@ -7,6 +7,7 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -14,10 +15,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -74,6 +77,7 @@ public class OI {
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
 	public static VictorSP liftMotor2 = new VictorSP(5);								//Motor to operate the lift (2)
 	public static DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
-	public static DoubleSolenoid lift = new DoubleSolenoid(2, 3);						//Double solenoid for the lift
+	public static Solenoid lift1 = new Solenoid(2);										//Lift solenoid 1
+	public static Solenoid lift2 = new Solenoid(3);										//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
 }

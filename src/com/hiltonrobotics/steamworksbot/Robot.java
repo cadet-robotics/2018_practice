@@ -7,6 +7,7 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,6 +45,7 @@ public class Robot extends TimedRobot {
 	 */
 	public static AutoCamManager camManager = null;
 	
+	public static Robot instance = null;
 	@Override
 	public void robotInit() {
 		/*m_oi = new OI();
@@ -51,6 +53,9 @@ public class Robot extends TimedRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		camManager = AutoCamManager.getInstance();
+		if (instance == null) {
+			instance = this;
+		}
 		//OI.gyro.calibrate();
 	}
 
@@ -118,6 +123,8 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
+		
+		
 	}
 
 	/**
