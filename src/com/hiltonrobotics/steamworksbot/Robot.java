@@ -7,6 +7,9 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
+import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +25,7 @@ import com.hiltonrobotics.steamworksbot.commands.ExampleCommand;
 import com.hiltonrobotics.steamworksbot.subsystems.ExampleSubsystem;*/
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,7 +75,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		//Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
 	}
 
 	/**
@@ -101,7 +105,7 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.start();
 		}*/
-		AutoControl.init();
+		new AutoCommand().start();
 	}
 
 	/**
@@ -109,8 +113,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		//Scheduler.getInstance().run();
-		AutoControl.runPeriodic();
+		Scheduler.getInstance().run();
 	}
 
 	@Override
@@ -123,6 +126,7 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
+		new TeleopCommand().start();
 	}
 
 	/**
@@ -155,7 +159,6 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		//Scheduler.getInstance().run();
 		//System.out.println(String.valueOf(OI.sensorDist.distMM()));
 		//OI.servo.setAngle(OI.joystick.getY() * 10 + 90);
 		//OI.servo.setAngle(OI.joystick.getY() * 4000);
@@ -165,7 +168,8 @@ public class Robot extends TimedRobot {
 		//OI.motor.setSpeed(0.5);
 		//System.out.println(OI.panel.getTotalPower());
 		
-		TeleopControl.runPeriodic();
+		//TeleopControl.runPeriodic();
+		Scheduler.getInstance().run();
 	}
 
 	/**

@@ -118,6 +118,6 @@ public class TeleopControl {
 	}
 	
 	public static void runInit() {
-		
+		OI.calibrateGyroSafe();
 	}
 }

@@ -76,4 +76,12 @@ public class OI {
 	public static DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
 	public static DoubleSolenoid lift = new DoubleSolenoid(2, 3);						//Double solenoid for the lift
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
+	
+	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	public static boolean hasGyroBeenCalibrated = false;
+	public static void calibrateGyroSafe() {
+		if (!hasGyroBeenCalibrated) {
+			gyro.calibrate();
+		}
+	}
 }
