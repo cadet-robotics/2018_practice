@@ -3,22 +3,24 @@ package com.hiltonrobotics.steamworksbot.commands;
 import com.hiltonrobotics.steamworksbot.OI;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 
-public class TurnCommand extends Command {
-	public static final double DEFAULT_ACCURACY = 0.5;
-	
-	private double goal = -1;
-	private double accuracy = -1;
-	
-	public void setTurn(double deg, double accuracyIn) {
-		goal = (deg + OI.gyro.getAngle()) % 360;
-		accuracy = accuracyIn;
+public class TurnCommand extends PIDCommand {
+	public TurnCommand(double goalIn, double tolerance) {
+		super(0.2, 0.2, 0.2);
+		getPIDController().setAbsoluteTolerance(tolerance);
+		getPIDController().setContinuous();
+		setInputRange(0, 360);
+		setSetpoint((OI.gyro.getAngle() + goalIn) % 360);
 	}
 	
-	public void setTurn(double deg) {
-		setTurn(deg, DEFAULT_ACCURACY);
+	public TurnCommand(double goalIn) {
+		this(goalIn, DEFAULT_TOLERANCE);
 	}
+
+	public static final double DEFAULT_TOLERANCE = 0.01;
 	
+	/*
 	@Override
 	protected void execute() {
 		if (goal == -1) {
@@ -36,11 +38,21 @@ public class TurnCommand extends Command {
 		OI.leftMotor.setSpeed(turnDist / 45 * 0.8);
 		OI.rightMotor.setSpeed(-turnDist / 45 * 0.8);
 	}
-	
-	private boolean isFinished = false;
-	
+	*/
+
+	@Override
+	protected double returnPIDInput() {
+		return OI.gyro.getAngle() % 360;
+	}
+
+	@Override
+	protected void usePIDOutput(double output) {
+		OI.leftMotor.setSpeed(output);
+		OI.rightMotor.setSpeed(output);
+	}
+
 	@Override
 	protected boolean isFinished() {
-		return isFinished;
+		return this.getPIDController().onTarget();
 	}
 }
