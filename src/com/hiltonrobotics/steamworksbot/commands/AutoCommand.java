@@ -14,12 +14,12 @@ public class AutoCommand extends Command {
 	 * place (0 = left, 1 = center, 2 = right): placement position out of 3 alliance robots
 	 * isOursRight (true = right, false = left): which side of the nearest scale we own
 	 */
-	int[] cmds = null;
-	public AutoCommand(int place, boolean isOursRight) {
-		int offset = (isOursRight ? 2 : 0) - place;
-		if (offset > 0) {
-			
-		}
+	private int place;
+	private boolean isOursRight;
+	
+	public AutoCommand(int placeIn, boolean isOursRightIn) {
+		place = placeIn;
+		isOursRight = isOursRightIn;
 	}
 	
 	private Command subcommand = null;
@@ -34,13 +34,32 @@ public class AutoCommand extends Command {
 				++state;
 			}
 		}
+		int offset = (isOursRight ? 2 : 0) - place;
 		switch (state) {
 			case 0:
-				subcommand = new TurnCommand(90);
-				Scheduler.getInstance().add(subcommand); break;
+				if (offset == 0) {
+					subcommand = new MoveCommand(24);
+					state = 4;
+				} else {
+					subcommand = new MoveCommand(12);
+				}
+				break;
+			case 1:
+				subcommand = new TurnCommand((offset > 0) ? -90 : 90);
+				break;
+			case 2:
+				subcommand = new MoveCommand(48);
+				break;
+			case 3:
+				subcommand = new TurnCommand((offset > 0) ? 90 : -90);
+				break;
+			case 4:
+				subcommand = new MoveCommand(12);
+				break;
 			default:
 				return;
 		}
+		Scheduler.getInstance().add(subcommand);
 		
 		/*
 		if (timestamp < 0.5) {

@@ -7,9 +7,12 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -75,6 +78,14 @@ public class OI {
 	public static Solenoid lift1 = new Solenoid(2);										//Lift solenoid 1
 	public static Solenoid lift2 = new Solenoid(3);										//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
+	
+	public static Encoder leftEncoder = new Encoder(1, 0); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
+	public static Encoder rightEncoder = new Encoder(3, 2); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
+	static {
+		rightEncoder.setReverseDirection(true); // Right motor is inverted, so right encoder is inverted
+		leftEncoder.setDistancePerPulse(MoveCommand.ROTATION_DISTANCE_MOVED);
+		rightEncoder.setDistancePerPulse(MoveCommand.ROTATION_DISTANCE_MOVED);
+	}
 	
 	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 	public static boolean hasGyroBeenCalibrated = false;

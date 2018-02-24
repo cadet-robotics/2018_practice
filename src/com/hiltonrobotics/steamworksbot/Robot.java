@@ -9,6 +9,8 @@ package com.hiltonrobotics.steamworksbot;
 
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
@@ -74,6 +76,8 @@ public class Robot extends TimedRobot {
 	 * chooser code above (like the commented example) or additional comparisons
 	 * to the switch structure below with additional strings & commands.
 	 */
+	String data;
+	
 	@Override
 	public void autonomousInit() {
 		//m_autonomousCommand = m_chooser.getSelected();
@@ -90,7 +94,11 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.start();
 		}*/
-		new AutoCommand().start();
+		data = DriverStation.getInstance().getGameSpecificMessage();
+		if (!data.matches("[LR][LR][LR]")) {
+			throw new IllegalArgumentException();
+		}
+		new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R').start();
 	}
 
 	/**
