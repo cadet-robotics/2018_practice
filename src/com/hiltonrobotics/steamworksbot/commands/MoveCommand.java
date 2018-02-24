@@ -38,7 +38,7 @@ public class MoveCommand extends Command {
 		@Override
 		public void pidWrite(double output) {
 			synchronized (posLock) {
-				posChange = output;
+				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
 			synchronized (notifyObj) {
 				notifyObj.notifyAll();
