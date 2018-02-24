@@ -29,7 +29,7 @@ public class TeleopControl {
 	static boolean clawOpenPrev = false;
 	static boolean winchSide = true;										//Winch mode - False = velcro
 	static boolean newBButtonPress = true;
-	static boolean altController = true;									//True if using alt controller
+	static boolean altController = false;									//True if using alt controller
 	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
