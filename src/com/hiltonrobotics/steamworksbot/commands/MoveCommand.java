@@ -17,6 +17,7 @@ public class MoveCommand extends Command {
 	private Object rotLock = new Object();
 	
 	private Object notifyObj = new Object();
+	private Object notifyLock = new Object();
 	
 	private double posChange = 0, rotChange = 0;
 	
@@ -40,7 +41,7 @@ public class MoveCommand extends Command {
 			synchronized (posLock) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
-			synchronized (notifyObj) {
+			synchronized (notifyLock) {
 				notifyObj.notifyAll();
 			}
 			try {
@@ -70,7 +71,7 @@ public class MoveCommand extends Command {
 			synchronized (rotLock) {
 				rotChange = output;
 			}
-			synchronized (notifyObj) {
+			synchronized (notifyLock) {
 				notifyObj.notifyAll();
 			}
 			try {
@@ -84,7 +85,16 @@ public class MoveCommand extends Command {
 	public static double ROTATION_DISTANCE_MOVED = Math.PI * 6;
 	
 	public MoveCommand(double dist) {
+		OI.leftEncoder.reset();
+		OI.rightEncoder.reset();
+		pidPos.setSetpoint(dist);
+		pidPos.setInputRange(Double.MIN_VALUE, Double.MAX_VALUE);
+		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS);
 		
+		pidRot.setInputRange(0, 360);
+		pidRot.setContinuous();
+		pidRot.setSetpoint(OI.gyro.getAngle() % 360);
+		pidRot.setAbsoluteTolerance(TurnCommand.DEFAULT_TOLERANCE);
 	}
 	
 	@Override

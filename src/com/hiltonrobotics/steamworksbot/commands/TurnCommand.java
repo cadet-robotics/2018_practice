@@ -9,8 +9,8 @@ public class TurnCommand extends PIDCommand {
 	public TurnCommand(double goalIn, double tolerance) {
 		super(0.2, 0.2, 0.2);
 		getPIDController().setAbsoluteTolerance(tolerance);
-		getPIDController().setContinuous();
 		setInputRange(0, 360);
+		getPIDController().setContinuous();
 		setSetpoint((OI.gyro.getAngle() + goalIn) % 360);
 	}
 	
