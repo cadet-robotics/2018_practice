@@ -48,7 +48,7 @@ public class AutoCommand extends Command {
 				subcommand = new TurnCommand((offset > 0) ? -90 : 90);
 				break;
 			case 2:
-				subcommand = new MoveCommand(48);
+				subcommand = new MoveCommand(Math.abs(offset) * 36);
 				break;
 			case 3:
 				subcommand = new TurnCommand((offset > 0) ? 90 : -90);
