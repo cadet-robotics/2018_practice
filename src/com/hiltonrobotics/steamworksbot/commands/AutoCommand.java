@@ -10,6 +10,18 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 public class AutoCommand extends Command {
 	public static double timestamp = 0;
 	
+	/*
+	 * place (0 = left, 1 = center, 2 = right): placement position out of 3 alliance robots
+	 * isOursRight (true = right, false = left): which side of the nearest scale we own
+	 */
+	int[] cmds = null;
+	public AutoCommand(int place, boolean isOursRight) {
+		int offset = (isOursRight ? 2 : 0) - place;
+		if (offset > 0) {
+			
+		}
+	}
+	
 	private Command subcommand = null;
 	private int state = 0;
 	public void execute() {
