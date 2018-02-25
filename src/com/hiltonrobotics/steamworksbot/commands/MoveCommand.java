@@ -3,6 +3,7 @@ package com.hiltonrobotics.steamworksbot.commands;
 import javax.swing.text.AbstractDocument.LeafElement;
 
 import com.hiltonrobotics.steamworksbot.OI;
+import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -85,6 +86,7 @@ public class MoveCommand extends Command {
 	public static double ROTATION_DISTANCE_MOVED = Math.PI * 6;
 	
 	public MoveCommand(double dist) {
+		requires(DriveSubsystem.getInstance());
 		OI.leftEncoder.reset();
 		OI.rightEncoder.reset();
 		pidPos.setSetpoint(dist);

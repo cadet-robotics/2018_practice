@@ -56,6 +56,9 @@ public class AutoCommand extends Command {
 			case 4:
 				subcommand = new MoveCommand(12);
 				break;
+			case 5:
+				subcommand = new TurnCommand(isOursRight ? 90 : -90);
+				break;
 			default:
 				return;
 		}

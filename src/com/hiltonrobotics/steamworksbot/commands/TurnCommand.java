@@ -1,6 +1,7 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
 import com.hiltonrobotics.steamworksbot.OI;
+import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.PIDCommand;
@@ -8,10 +9,11 @@ import edu.wpi.first.wpilibj.command.PIDCommand;
 public class TurnCommand extends PIDCommand {
 	public TurnCommand(double goalIn, double tolerance) {
 		super(0.2, 0.2, 0.2);
+		requires(DriveSubsystem.getInstance());
 		getPIDController().setAbsoluteTolerance(tolerance);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
-		setSetpoint((OI.gyro.getAngle() + goalIn) % 360);
+		setSetpoint((OI.gyro.getAngle() - goalIn) % 360);
 	}
 	
 	public TurnCommand(double goalIn) {
