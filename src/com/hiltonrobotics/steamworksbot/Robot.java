@@ -7,6 +7,8 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import java.nio.channels.NetworkChannel;
+
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
@@ -95,7 +97,7 @@ public class Robot extends TimedRobot {
 			m_autonomousCommand.start();
 		}*/
 		data = DriverStation.getInstance().getGameSpecificMessage();
-		if (!data.matches("[LR][LR][LR]")) {
+		if (!data.matches("[LR][LR][LR][0-9]*")) {
 			throw new IllegalArgumentException();
 		}
 		new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R').start();
