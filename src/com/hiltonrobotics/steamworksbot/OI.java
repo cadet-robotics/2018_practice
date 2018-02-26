@@ -54,7 +54,8 @@ public class OI {
 	//According to what we've been doing we aren't using a command based robot
 	//The method I (Alex) was using before is the normal way for a timed robot, what we were doing
 	//Also this entire file is meant for a command based 2017 robot - It's outdated
-	public static Joystick controller = new Joystick(0);
+	public static Joystick controller = new Joystick(0);								//Primary driving controller
+	public static Joystick controller2 = new Joystick(1);								//Secondary controller
 	public static JoystickButton buttonA = new JoystickButton(controller, 2);			//A button input
 	public static JoystickButton buttonB = new JoystickButton(controller, 3);			//B button input
 	public static JoystickButton buttonX = new JoystickButton(controller, 1);			//X button input
@@ -67,6 +68,7 @@ public class OI {
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
+	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
 	public static VictorSP clawMotorL = new VictorSP(2);								//Motor to move the claw arm (left)
 	public static VictorSP clawMotorR = new VictorSP(3);								//Motor to move the claw arm (right)
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
