@@ -18,6 +18,8 @@ public class TeleopControl {
 	static double clawMoveTrimSpeed = 0.15;									//Claw movement trim speed
 	static double liftSpeed = 0.7;											//Multiplier for the lift speed
 	static double clawSafeSpeed = 0.2;										//Speed for the claw to correct at limit switches
+	static double rampPercent = 0.25;										//Power multiplier for drive motors - Ramps up while held
+	static double rampIncr = 0.05;											//Linear increment for ramping
 	static int dpad = 0;													//Value for the dpad 'angle'
 	static int liftStatus = 0;												//Number for what state the lift is in
 	static int liftStatusPrev = -1;
@@ -30,6 +32,7 @@ public class TeleopControl {
 	static boolean winchSide = true;										//Winch mode - False = velcro
 	static boolean newBButtonPress = true;
 	static boolean altController = false;									//True if using alt controller
+	static boolean twoControllers = true;									//True if using two controllers
 	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
@@ -42,8 +45,15 @@ public class TeleopControl {
 	}
 	
 	public static void printStatuses() {
-		System.out.println("PDP Voltage: " + OI.pdp.getVoltage());
-		System.out.println("B: " + OI.buttonB.get());
+		if(liftStatus == 0) {
+			System.out.println("Lift State: Reset");
+		} else if(liftStatus == 1) {
+			System.out.println("List State: Lift Hook");
+		} else if(liftStatus == 2) {
+			System.out.println("Lift State: Lift Robot");
+		} else if(liftStatus == -1) {
+			System.out.println("Lift State: Lock Robot");
+		}
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -81,6 +91,7 @@ public class TeleopControl {
 			if(OI.buttonLB.get()) {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
+				OI.liftMotor3.setSpeed(liftSpeed);
 			} /*else if(OI.controller.getRawAxis(2) > 0.1){
 				OI.liftMotor1.setSpeed(-liftSpeed);
 				OI.liftMotor2.setSpeed(-liftSpeed);
@@ -89,6 +100,7 @@ public class TeleopControl {
 			if(OI.buttonLB.get()) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
+				OI.liftMotor3.setSpeed(liftSpeed);
 			} /*else if(OI.buttonLT.get()) {
 				OI.liftMotor1.setSpeed(-liftSpeed);
 				OI.liftMotor2.setSpeed(-liftSpeed);
@@ -98,11 +110,11 @@ public class TeleopControl {
 	
 	public static void setDriveMotors() {									//Set drive motors
 		if(Math.abs(controlX) > Math.abs(controlY)) {						//Apply whichever axis is of greater absolute value
-			OI.leftMotor.setSpeed(controlX * moveSpeed);					//Turn robot
-			OI.rightMotor.setSpeed(controlX * moveSpeed);					//TODO: test and swap both to negative if wrong way
+			OI.leftMotor.setSpeed(controlX * moveSpeed * rampPercent);		//Turn robot
+			OI.rightMotor.setSpeed(controlX * moveSpeed * rampPercent);
 		} else {
-			OI.leftMotor.setSpeed(-(controlY * moveSpeed));					//Move robot forwards/backwards
-			OI.rightMotor.setSpeed(controlY * moveSpeed);				//TODO: test and swap negative to leftMotor if wrong way
+			OI.leftMotor.setSpeed(-(controlY * moveSpeed * rampPercent));	//Move robot forwards/backwards
+			OI.rightMotor.setSpeed(controlY * moveSpeed * rampPercent);
 		}
 	}
 	
@@ -169,9 +181,15 @@ public class TeleopControl {
 			clawOpen = (OI.controller.getRawAxis(3) > 0.1);
 		} else {															//Normal controller
 			OI.controller = new Joystick(0);
-			OI.buttonLB = new JoystickButton(OI.controller, 5);
+			OI.controller2 = new Joystick(1);
+			if(twoControllers) {
+				OI.buttonLB = new JoystickButton(OI.controller2, 5);
+				OI.buttonB = new JoystickButton(OI.controller2, 3);
+			} else {
+				OI.buttonLB = new JoystickButton(OI.controller, 5);
+				OI.buttonB = new JoystickButton(OI.controller, 3);
+			}
 			OI.buttonA = new JoystickButton(OI.controller, 0);
-			OI.buttonB = new JoystickButton(OI.controller, 3);
 			controlX = OI.controller.getX();								//Get X-Axis
 			controlY = OI.controller.getY();								//Get Y-Axis
 			controlThrottle = OI.controller.getThrottle();					//Get Throttle-Axis
@@ -185,6 +203,16 @@ public class TeleopControl {
 		dpadRight = (dpad == 45 || dpad == 90 || dpad == 135);
 		
 		if(controlThrottle == -0.0078125) controlThrottle = 0;				//Correct right joystick - rest position was showing -0.0078125
+		
+		if(controlX != 0 || controlY != 0) {
+			if(rampPercent < 1) {
+				rampPercent += rampIncr;
+			} else {
+				rampPercent = 1;
+			}
+		} else {
+			rampPercent = 0.25;
+		}
 	}
 	
 	public static void runInit() {
