@@ -1,7 +1,5 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
-import javax.swing.text.AbstractDocument.LeafElement;
-
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
@@ -22,7 +20,7 @@ public class MoveCommand extends Command {
 	
 	private double posChange = 0, rotChange = 0;
 	
-	PIDController pidPos = new PIDController(2, 2, 2, new PIDSource() {
+	private PIDController pidPos = new PIDController(2, 2, 2, new PIDSource() {
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
 		}
@@ -52,7 +50,7 @@ public class MoveCommand extends Command {
 			}
 		}
 	});
-	PIDController pidRot = new PIDController(0.2, 0.2, 0.2, new PIDSource() {
+	private PIDController pidRot = new PIDController(0.2, 0.2, 0.2, new PIDSource() {
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
 		}
@@ -112,8 +110,8 @@ public class MoveCommand extends Command {
 			}
 			c.cancel();
 		}
-		OI.leftMotor.setSpeed(rotChange + posChange);
-		OI.rightMotor.setSpeed(rotChange - posChange);
+		OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1));
+		OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1));
 	}
 
 	@Override

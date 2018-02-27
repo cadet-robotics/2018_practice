@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
 		m_chooser.addDefault("Default Auto", new ExampleCommand());*/
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
-		camManager = AutoCamManager.getInstance();
+		if (false) camManager = AutoCamManager.getInstance();
 		if (instance == null) {
 			instance = this;
 		}
@@ -97,7 +97,8 @@ public class Robot extends TimedRobot {
 			m_autonomousCommand.start();
 		}*/
 		data = DriverStation.getInstance().getGameSpecificMessage();
-		if (!data.matches("[LR][LR][LR][0-9]*")) {
+		System.out.println(data);
+		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
 		new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R').start();

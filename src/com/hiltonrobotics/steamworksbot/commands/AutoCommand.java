@@ -18,6 +18,7 @@ public class AutoCommand extends Command {
 	private boolean isOursRight;
 	
 	public AutoCommand(int placeIn, boolean isOursRightIn) {
+		if (!OI.isGyroOk) state = -1;
 		place = placeIn;
 		isOursRight = isOursRightIn;
 	}
@@ -60,6 +61,8 @@ public class AutoCommand extends Command {
 				subcommand = new TurnCommand(isOursRight ? 90 : -90);
 				break;
 			default:
+				this.cancel();
+				System.out.println("Ending autonomous...");
 				return;
 		}
 		Scheduler.getInstance().add(subcommand);
