@@ -129,6 +129,7 @@ public class Robot extends TimedRobot {
 		System.out.println("Teleop Init");
 		c = new TeleopCommand();
 		c.start();
+		Scheduler.getInstance().run();
 	}
 
 	/**
