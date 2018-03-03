@@ -8,7 +8,7 @@ public class DriveSubsystem extends Subsystem {
 	private static DriveSubsystem instance;
 	
 	private DriveSubsystem() {
-		setDefaultCommand(new FreezeDriveCommand());
+		//setDefaultCommand(new FreezeDriveCommand());
 	}
 	
 	public static DriveSubsystem getInstance() {

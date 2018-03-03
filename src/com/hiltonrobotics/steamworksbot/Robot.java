@@ -14,6 +14,7 @@ import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 /**
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot {
 		m_chooser.addDefault("Default Auto", new ExampleCommand());*/
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
-		camManager = AutoCamManager.getInstance();
+		//camManager = AutoCamManager.getInstance();
 		if (instance == null) {
 			instance = this;
 		}
@@ -78,7 +79,8 @@ public class Robot extends TimedRobot {
 	 * chooser code above (like the commented example) or additional comparisons
 	 * to the switch structure below with additional strings & commands.
 	 */
-	String data;
+	private String data;
+	private Command c;
 	
 	@Override
 	public void autonomousInit() {
@@ -100,7 +102,8 @@ public class Robot extends TimedRobot {
 		if (!data.matches("[LR][LR][LR][0-9]*")) {
 			throw new IllegalArgumentException();
 		}
-		new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R').start();
+		c = new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
+		c.start();
 	}
 
 	/**
@@ -121,7 +124,9 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
-		new TeleopCommand().start();
+		System.out.println("Teleop Init");
+		c = new TeleopCommand();
+		c.start();
 	}
 
 	/**
