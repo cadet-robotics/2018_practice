@@ -14,7 +14,7 @@ public class TeleopControl {
 	static double controlRT = 0;											//Value for RT
 	static double controlThrottle = 0;										//Throttle-Axis of the right joystick
 	static double moveSpeedForwards = 0.7;									//Forwards-movement motor speed multiplier
-	static double moveSpeedTurn = 0.5;										//Turning-movement motor speed multiplier
+	static double moveSpeedTurn = 0.65;										//Turning-movement motor speed multiplier
 	static double leftMotorSpeed = 0;										//Absolute value for left motor speed
 	static double rightMotorSpeed = 0;										//Absolute value for right motor speed
 	static double clawSpeed = 0.8;											//Claw movement motor speed mutiplier
@@ -25,15 +25,14 @@ public class TeleopControl {
 	static double rampIncr = 0.05;											//Linear increment for ramping
 	static int dpad = 0;													//Value for the dpad 'angle'
 	static int liftStatus = 0;												//Number for what state the lift is in
-	static int liftStatusPrev = -1;
+	static int liftStatusPrev = -1;											//Previous state of the lift
 	static boolean dpadUp = false;											//D-pad up button
 	static boolean dpadDown = false;										//D-pad down button
 	static boolean dpadLeft = false;										//D-pad left button
 	static boolean dpadRight = false;										//D-pad right button
-	static boolean clawOpen = false;
-	static boolean clawOpenPrev = false;
-	static boolean winchSide = true;										//Winch mode - False = velcro
-	static boolean newBButtonPress = true;
+	static boolean clawOpen = false;										//Weather or not the claw is open
+	static boolean clawOpenPrev = false;									//Previous state of the claw
+	static boolean newBButtonPress = true;									//Weather or not the current b-button press is a new one
 	static boolean altController = false;									//True if using alt controller
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
@@ -51,13 +50,11 @@ public class TeleopControl {
 	
 	public static void printStatuses() {									//Console output for any statuses the drivers would need, currently lift mode
 		if(liftStatus == 0) {
-			System.out.println("Lift State: Reset");
+			System.out.println("Lift State: Lock Robot");
 		} else if(liftStatus == 1) {
 			System.out.println("List State: Lift Hook");
 		} else if(liftStatus == 2) {
 			System.out.println("Lift State: Lift Robot");
-		} else if(liftStatus == -1) {
-			System.out.println("Lift State: Lock Robot");
 		}
 	}
 	
@@ -74,15 +71,15 @@ public class TeleopControl {
 			
 			if(liftStatus == 0) { // Red = 2 black = 1
 				OI.lift1.set(false);
-				OI.lift2.set(false);
+				OI.lift2.set(true);
 			} else if(liftStatus == 1) {
 				OI.lift1.set(false);
 				OI.lift2.set(true);
 			} else if(liftStatus == 2) {
 				OI.lift1.set(true);
 				OI.lift2.set(false);
-			} else if(liftStatus != -1) {
-				liftStatus = -1;
+			} else {
+				liftStatus = 0;
 			}
 		}
 	}
@@ -192,6 +189,7 @@ public class TeleopControl {
 		OI.clawMotorR.setSpeed(0);
 		OI.liftMotor1.setSpeed(0);
 		OI.liftMotor2.setSpeed(0);
+		OI.liftMotor3.setSpeed(0);
 	}
 	
 	public static void setInputs() {										//Sets variables at the start of a tick
@@ -211,9 +209,11 @@ public class TeleopControl {
 			OI.controller2 = new Joystick(1);
 			if(twoControllers) {
 				OI.buttonLB = new JoystickButton(OI.controller2, 5);
+				OI.buttonLT = new JoystickButton(OI.controller2, 7);
 				OI.buttonB = new JoystickButton(OI.controller2, 3);
 			} else {
 				OI.buttonLB = new JoystickButton(OI.controller, 5);
+				OI.buttonLT = new JoystickButton(OI.controller, 7);
 				OI.buttonB = new JoystickButton(OI.controller, 3);
 			}
 			OI.buttonA = new JoystickButton(OI.controller, 0);
