@@ -40,18 +40,16 @@ public class MoveCommand extends Command {
 		@Override
 		public void pidWrite(double output) {
 			synchronized (posLock) {
-				posChange = Math.max(Math.min(output, 0.6), -0.6);
-			}
-			synchronized (posLock) {
 				try {
-					posLock.wait(10);
+					posLock.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			synchronized (notifyPos) {
-				notifyPos.notifyAll();
+			synchronized (posLock) {
+				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
+			notifyPos.notifyAll();
 		}
 	});
 	
@@ -73,18 +71,16 @@ public class MoveCommand extends Command {
 		@Override
 		public void pidWrite(double output) {
 			synchronized (rotLock) {
-				rotChange = output;
-			}
-			synchronized (rotLock) {
 				try {
-					rotLock.wait(10);
+					rotLock.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			synchronized (notifyRot) {
-				notifyRot.notifyAll();
+			synchronized (rotLock) {
+				rotChange = output;
 			}
+			notifyRot.notifyAll();
 		}
 	});
 	
@@ -107,15 +103,11 @@ public class MoveCommand extends Command {
 	@Override
 	public void execute() {
 		try {
-			synchronized (posLock) {
-				posLock.notifyAll();
-			}
+			posLock.notifyAll();
 			synchronized (notifyPos) {
 				notifyPos.wait(10);
 			}
-			synchronized (rotLock) {
-				rotLock.notifyAll();
-			}
+			rotLock.notifyAll();
 			synchronized (notifyRot) {
 				notifyRot.wait(10);
 			}
