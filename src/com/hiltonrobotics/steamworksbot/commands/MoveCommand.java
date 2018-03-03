@@ -1,5 +1,7 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
+import java.io.PipedOutputStream;
+
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
@@ -15,8 +17,8 @@ public class MoveCommand extends Command {
 	private Object posLock = new Object();
 	private Object rotLock = new Object();
 	
-	private Object notifyObj = new Object();
-	private Object notifyLock = new Object();
+	private Object notifyPos = new Object();
+	private Object notifyRot = new Object();
 	
 	private double posChange = 0, rotChange = 0;
 	
@@ -40,16 +42,19 @@ public class MoveCommand extends Command {
 			synchronized (posLock) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
-			synchronized (notifyLock) {
-				notifyObj.notifyAll();
+			synchronized (posLock) {
+				try {
+					posLock.wait(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				posLock.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			synchronized (notifyPos) {
+				notifyPos.notifyAll();
 			}
 		}
 	});
+	
 	private PIDController pidRot = new PIDController(0.2, 0.2, 0.2, new PIDSource() {
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
@@ -70,13 +75,15 @@ public class MoveCommand extends Command {
 			synchronized (rotLock) {
 				rotChange = output;
 			}
-			synchronized (notifyLock) {
-				notifyObj.notifyAll();
+			synchronized (rotLock) {
+				try {
+					rotLock.wait(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				rotLock.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			synchronized (notifyRot) {
+				notifyRot.notifyAll();
 			}
 		}
 	});
@@ -100,8 +107,18 @@ public class MoveCommand extends Command {
 	@Override
 	public void execute() {
 		try {
-			notifyObj.wait();
-			notifyObj.wait();
+			synchronized (posLock) {
+				posLock.notifyAll();
+			}
+			synchronized (notifyPos) {
+				notifyPos.wait(10);
+			}
+			synchronized (rotLock) {
+				rotLock.notifyAll();
+			}
+			synchronized (notifyRot) {
+				notifyRot.wait(10);
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			Command c = this;
