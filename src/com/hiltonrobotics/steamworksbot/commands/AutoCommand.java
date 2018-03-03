@@ -1,8 +1,6 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
 import com.hiltonrobotics.steamworksbot.OI;
-import com.hiltonrobotics.steamworksbot.Robot;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -18,7 +16,6 @@ public class AutoCommand extends Command {
 	private boolean isOursRight;
 	
 	public AutoCommand(int placeIn, boolean isOursRightIn) {
-		if (!OI.isGyroOk) state = -1;
 		place = placeIn;
 		isOursRight = isOursRightIn;
 	}

@@ -10,7 +10,6 @@ package com.hiltonrobotics.steamworksbot;
 import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -92,17 +91,7 @@ public class OI {
 	}
 	
 	public static Gyro gyro = new ADXRS450_Gyro();
-	public static boolean isGyroOk = true;
-	static {
-		try {
-			if (ADXRS450_Gyro.class.getDeclaredField("m_spi").get(gyro) == null) {
-				isGyroOk = false;
-			}
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
-			System.out.println("Assuming gyro ok");
-		}
-	}
+	
 	public static boolean hasGyroBeenCalibrated = false;
 	public static void calibrateGyroSafe() {
 		if (!hasGyroBeenCalibrated) {
