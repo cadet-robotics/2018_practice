@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
 		if (instance == null) {
 			instance = this;
 		}
+		SmartDashboard.getEntry("rot").
 		//OI.gyro.calibrate();
 	}
 
@@ -101,6 +103,7 @@ public class Robot extends TimedRobot {
 		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
+		OI.calibrateGyroSafe();
 		c = new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
 		c.start();
 	}
@@ -111,6 +114,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		SmartDashboard.updateValues();
 	}
 
 	@Override
@@ -124,6 +128,7 @@ public class Robot extends TimedRobot {
 			m_autonomousCommand.cancel();
 		}*/
 		System.out.println("Teleop Init");
+		OI.calibrateGyroSafe();
 		c = new TeleopCommand();
 		c.start();
 		Scheduler.getInstance().run();
@@ -170,6 +175,7 @@ public class Robot extends TimedRobot {
 		
 		//TeleopControl.runPeriodic();
 		Scheduler.getInstance().run();
+		SmartDashboard.updateValues();
 	}
 
 	/**

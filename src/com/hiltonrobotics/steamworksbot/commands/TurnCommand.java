@@ -5,10 +5,16 @@ import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.PIDCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TurnCommand extends PIDCommand {
+	public static final double P = 0.02;
+	public static final double I = 0;
+	public static final double D = 0;
+	
 	public TurnCommand(double goalIn, double tolerance) {
-		super(0.2, 0.2, 0.2);
+		super(P, I, D);
+		SmartDashboard.putNumber("turnTo", goalIn);
 		requires(DriveSubsystem.getInstance());
 		getPIDController().setAbsoluteTolerance(tolerance);
 		setInputRange(0, 360);
@@ -49,6 +55,8 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected void usePIDOutput(double output) {
+		System.out.println(output);
+		
 		OI.leftMotor.setSpeed(output);
 		OI.rightMotor.setSpeed(output);
 	}

@@ -21,7 +21,7 @@ public class AutoCommand extends Command {
 	}
 	
 	private Command subcommand = null;
-	private int state = 0;
+	private int state = -1;
 	public void execute() {
 		if (subcommand != null) {
 			if (subcommand.isRunning()) {
@@ -29,9 +29,9 @@ public class AutoCommand extends Command {
 			} else {
 				System.out.println("Finished " + subcommand.getName() + " in ~" + subcommand.timeSinceInitialized() + " seconds");
 				subcommand = null;
-				++state;
 			}
 		}
+		++state;
 		int offset = (isOursRight ? 2 : 0) - place;
 		switch (state) {
 			case 0:
@@ -75,7 +75,6 @@ public class AutoCommand extends Command {
 	
 	public void initialize() {
 		super.initialize();
-		OI.calibrateGyroSafe();
 	}
 
 	@Override

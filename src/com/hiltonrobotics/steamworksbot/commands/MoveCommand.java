@@ -8,14 +8,12 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class MoveCommand extends Command {
 	public static final double DEFAULT_TOLERANCE_POS = 0.005;
 	
-	private Object posLock = new Object();
-	private Object rotLock = new Object();
-	
-	private double posChange = 0, rotChange = 0;
+	private Double posChange = (double) 0, rotChange = (double) 0;
 	
 	private PIDController pidPos = new PIDController(2, 2, 2, new PIDSource() {
 		@Override
@@ -34,20 +32,22 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
-			synchronized (posLock) {
+			synchronized (posChange) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
 		}
 	});
 	
-	private PIDController pidRot = new PIDController(0.2, 0.2, 0.2, new PIDSource() {
+	private PIDController pidRot = new PIDController(TurnCommand.P, TurnCommand.I, TurnCommand.D, new PIDSource() {
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
 		}
 		
 		@Override
 		public double pidGet() {
-			return OI.gyro.getAngle() % 360;
+			double d = OI.gyro.getAngle() % 360;
+			SmartDashboard.putNumber("rot", d);
+			return d;
 		}
 		
 		@Override
@@ -57,7 +57,7 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
-			synchronized (rotLock) {
+			synchronized (rotChange) {
 				rotChange = output;
 			}
 		}
@@ -70,21 +70,26 @@ public class MoveCommand extends Command {
 		OI.leftEncoder.reset();
 		OI.rightEncoder.reset();
 		pidPos.setSetpoint(dist);
-		pidPos.setInputRange(Double.MIN_VALUE, Double.MAX_VALUE);
-		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS);
+		pidPos.setInputRange(dist * (-2), dist * 2);
+		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS * 4);
+		pidPos.enable();
 		
 		pidRot.setInputRange(0, 360);
 		pidRot.setContinuous();
-		pidRot.setSetpoint(OI.gyro.getAngle() % 360);
+		double d = OI.gyro.getAngle() % 360;
+		SmartDashboard.putNumber("goal", d);
+		pidRot.setSetpoint(d);
 		pidRot.setAbsoluteTolerance(TurnCommand.DEFAULT_TOLERANCE);
+		pidRot.enable();
 	}
 	
 	@Override
 	public void execute() {
-		synchronized (posLock) {
-			synchronized (rotLock) {
-				OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1));
-				OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1));
+		synchronized (posChange) {
+			synchronized (rotChange) {
+				System.out.println(posChange + ", " + rotChange);
+				OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1) / 1.5);
+				OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1) / 1.5);
 			}
 		}
 	}

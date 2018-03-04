@@ -9,6 +9,7 @@ package com.hiltonrobotics.steamworksbot;
 
 import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
 
+import edu.wpi.first.wpilibj.ADXL345_SPI;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
