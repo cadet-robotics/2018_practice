@@ -7,8 +7,6 @@
 
 package com.hiltonrobotics.steamworksbot;
 
-import java.nio.channels.NetworkChannel;
-
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 

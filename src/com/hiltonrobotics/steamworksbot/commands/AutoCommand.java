@@ -62,7 +62,7 @@ public class AutoCommand extends Command {
 				System.out.println("Ending autonomous...");
 				return;
 		}
-		Scheduler.getInstance().add(subcommand);
+		subcommand.start();
 		
 		/*
 		if (timestamp < 0.5) {

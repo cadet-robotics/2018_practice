@@ -1,7 +1,5 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
-import java.io.PipedOutputStream;
-
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
@@ -16,9 +14,6 @@ public class MoveCommand extends Command {
 	
 	private Object posLock = new Object();
 	private Object rotLock = new Object();
-	
-	private Object notifyPos = new Object();
-	private Object notifyRot = new Object();
 	
 	private double posChange = 0, rotChange = 0;
 	
@@ -40,16 +35,8 @@ public class MoveCommand extends Command {
 		@Override
 		public void pidWrite(double output) {
 			synchronized (posLock) {
-				try {
-					posLock.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			synchronized (posLock) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
-			notifyPos.notifyAll();
 		}
 	});
 	
@@ -71,16 +58,8 @@ public class MoveCommand extends Command {
 		@Override
 		public void pidWrite(double output) {
 			synchronized (rotLock) {
-				try {
-					rotLock.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			synchronized (rotLock) {
 				rotChange = output;
 			}
-			notifyRot.notifyAll();
 		}
 	});
 	
@@ -102,25 +81,12 @@ public class MoveCommand extends Command {
 	
 	@Override
 	public void execute() {
-		try {
-			posLock.notifyAll();
-			synchronized (notifyPos) {
-				notifyPos.wait(10);
+		synchronized (posLock) {
+			synchronized (rotLock) {
+				OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1));
+				OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1));
 			}
-			rotLock.notifyAll();
-			synchronized (notifyRot) {
-				notifyRot.wait(10);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			Command c = this;
-			while (c.getGroup() != null) {
-				c = c.getGroup();
-			}
-			c.cancel();
 		}
-		OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1));
-		OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1));
 	}
 
 	@Override
