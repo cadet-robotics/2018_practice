@@ -1,9 +1,14 @@
 package com.hiltonrobotics.steamworksbot;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopControl {
 	
@@ -49,13 +54,29 @@ public class TeleopControl {
 	}
 	
 	public static void printStatuses() {									//Console output for any statuses the drivers would need, currently lift mode
+		DecimalFormat f = new DecimalFormat("#.###");
+		f.setRoundingMode(RoundingMode.HALF_UP);
+		
+		double pcx = Double.parseDouble(f.format(OI.controller.getX()));
+		double pcy = Double.parseDouble(f.format(OI.controller.getY()));
+		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
+		double ang = Double.parseDouble(f.format(OI.gyro.getAngle() % 360));
+		String armDir = (pct >= 0) ? "Down" : "Up";
+		
 		if(liftStatus == 0) {
-			System.out.println("Lift State: Lock Robot");
+			SmartDashboard.putString("Lift State", "Lock Robot");
 		} else if(liftStatus == 1) {
-			System.out.println("List State: Lift Hook");
+			SmartDashboard.putString("List State",  "Lift Hook");
 		} else if(liftStatus == 2) {
-			System.out.println("Lift State: Lift Robot");
+			SmartDashboard.putString("Lift State", "Lift Robot");
 		}
+		
+		SmartDashboard.putNumber("PC X", pcx);
+		SmartDashboard.putNumber("PC Y", pcy);
+		SmartDashboard.putNumber("Arm Speed", pct);
+		SmartDashboard.putString("Arm Direction", armDir);
+		SmartDashboard.putBoolean("Claw Status", clawOpen);
+		SmartDashboard.putNumber("Angle",  ang);
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -86,7 +107,7 @@ public class TeleopControl {
 	
 	public static void setLiftMotors() {									//Set lift motors
 		if(altController) {													//Alternate controller setup
-			if(OI.buttonLB.get()) {
+			if(OI.buttonLB.get() && OI.limitLift.get()) {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -96,7 +117,7 @@ public class TeleopControl {
 				OI.liftMotor3.setSpeed(-liftSpeed);
 			}
 		} else {															//Normal controller setup
-			if(OI.buttonLB.get()) {												
+			if(OI.buttonLB.get() && OI.limitLift.get()) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);

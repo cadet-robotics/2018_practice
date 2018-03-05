@@ -71,6 +71,7 @@ public class OI {
 	public static JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
 	public static DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
+	public static DigitalInput limitLift = new DigitalInput(7);							//Lift limit switch
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
