@@ -36,9 +36,9 @@ public class Stats {
 						}
 					}
 					try {
-						wait(0, 100);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Thread.currentThread().interrupt();
 					}
 				}
 			}
