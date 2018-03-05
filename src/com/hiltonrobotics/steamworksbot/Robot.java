@@ -38,7 +38,6 @@ public class Robot extends TimedRobot {
 	public static AutoCamManager camManager = null;
 	public static Robot instance;
 	
-	@SuppressWarnings("unused")
 	@Override
 	public void robotInit() {
 		/*m_oi = new OI();
@@ -50,7 +49,7 @@ public class Robot extends TimedRobot {
 		if (instance == null) {
 			instance = this;
 		}
-		SmartDashboard.getEntry("rot").
+		//SmartDashboard.getEntry("rot").
 		//OI.gyro.calibrate();
 	}
 
@@ -138,8 +137,8 @@ public class Robot extends TimedRobot {
 	 * This function is called periodically during operator control.
 	 */
 	
-	private int ticks = 0;
-	private int state = -1;
+	//private int ticks = 0;
+	//private int state = -1;
 	
 	public void periodicActuator() {
 	/*	if ((ticks % 100) == 0) {

@@ -3,7 +3,6 @@ package com.hiltonrobotics.steamworksbot.commands;
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

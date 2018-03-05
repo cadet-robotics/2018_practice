@@ -63,8 +63,6 @@ public class MoveCommand extends Command {
 		}
 	});
 	
-	public static double ROTATION_DISTANCE_MOVED = Math.PI * 6;
-	
 	public MoveCommand(double dist) {
 		requires(DriveSubsystem.getInstance());
 		OI.leftEncoder.reset();

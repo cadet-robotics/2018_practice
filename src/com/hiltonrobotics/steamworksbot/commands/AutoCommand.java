@@ -1,9 +1,7 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
-import com.hiltonrobotics.steamworksbot.OI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class AutoCommand extends Command {
 	public static double timestamp = 0;

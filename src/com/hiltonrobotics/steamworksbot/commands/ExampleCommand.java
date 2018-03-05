@@ -8,7 +8,6 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import com.hiltonrobotics.steamworksbot.Robot;
 
 /**
  * An example command.  You can replace me with your own command.
