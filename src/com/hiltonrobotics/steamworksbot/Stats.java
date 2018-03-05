@@ -9,7 +9,7 @@ public class Stats {
 	public static double ROTATION_DISTANCE_MOVED = Math.PI * WEEL_DIAMETER;
 	
 	private Thread updates;
-	private ArrayList<StatElement<Object>> elements = new ArrayList<>();
+	private ArrayList<StatElement<? extends Object>> elements = new ArrayList<>();
 	private Stats() {
 		OI.calibrateGyroSafe();
 		updates = new Thread() {
@@ -18,7 +18,13 @@ public class Stats {
 				super.run();
 				while (!Thread.interrupted()) {
 					synchronized (updates) {
-						for (StatElement<Object> e : elements) {
+						for (StatElement<? extends Object> e : elements) {
+							System.out.println("Running " + e.getKey());
+							if (e.isDone()) {
+								System.out.println("Removing " + e.getKey());
+								elements.remove(e);
+								continue;
+							}
 							Object o = e.getValue();
 							if (o instanceof Double) {
 								SmartDashboard.putNumber(e.getKey(), (Double) o);
@@ -30,13 +36,14 @@ public class Stats {
 						}
 					}
 					try {
-						wait(100);
+						wait(0, 100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		};
+		updates.start();
 	}
 	
 	private static Stats instance = null;
@@ -48,15 +55,11 @@ public class Stats {
 		return instance;
 	}
 	
-	public void add(StatElement<Object> e) {
+	public void add(StatElement<? extends Object> e) {
+		System.out.println("Adding " + e.getKey() + "...");
 		synchronized (elements) {
 			elements.add(e);
 		}
+		System.out.println("Added " + e.getKey());
 	}
-}
-
-interface StatElement<T> {
-	String getKey();
-	T getValue();
-	boolean isDone();
 }

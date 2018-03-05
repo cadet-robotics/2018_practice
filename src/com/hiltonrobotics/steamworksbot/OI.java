@@ -7,8 +7,6 @@
 
 package com.hiltonrobotics.steamworksbot;
 
-import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
-
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -87,8 +85,8 @@ public class OI {
 	public static Encoder rightEncoder = new Encoder(3, 2); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	static {
 		rightEncoder.setReverseDirection(true); // Right motor is inverted, so right encoder is inverted
-		leftEncoder.setDistancePerPulse(MoveCommand.ROTATION_DISTANCE_MOVED);
-		rightEncoder.setDistancePerPulse(MoveCommand.ROTATION_DISTANCE_MOVED);
+		leftEncoder.setDistancePerPulse(Stats.ROTATION_DISTANCE_MOVED);
+		rightEncoder.setDistancePerPulse(Stats.ROTATION_DISTANCE_MOVED);
 	}
 	
 	public static Gyro gyro = new ADXRS450_Gyro();
