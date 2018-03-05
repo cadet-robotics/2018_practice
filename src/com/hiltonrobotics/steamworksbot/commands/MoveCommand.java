@@ -1,6 +1,8 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
 import com.hiltonrobotics.steamworksbot.OI;
+import com.hiltonrobotics.steamworksbot.StatElement;
+import com.hiltonrobotics.steamworksbot.Stats;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -75,7 +77,22 @@ public class MoveCommand extends Command {
 		pidRot.setInputRange(0, 360);
 		pidRot.setContinuous();
 		double d = OI.gyro.getAngle() % 360;
-		SmartDashboard.putNumber("goal", d);
+		Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return null;
+			}
+
+			@Override
+			public Double getValue() {
+				return d;
+			}
+
+			@Override
+			public boolean isDone() {
+				return isCompleted();
+			}
+		});
 		pidRot.setSetpoint(d);
 		pidRot.setAbsoluteTolerance(TurnCommand.DEFAULT_TOLERANCE);
 		pidRot.enable();

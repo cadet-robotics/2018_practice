@@ -19,6 +19,12 @@ public class Stats {
 				while (!Thread.interrupted()) {
 					synchronized (updates) {
 						for (StatElement<? extends Object> e : elements) {
+							System.out.println("Running " + e.getKey());
+							if (e.isDone()) {
+								System.out.println("Removing " + e.getKey());
+								elements.remove(e);
+								continue;
+							}
 							Object o = e.getValue();
 							if (o instanceof Double) {
 								SmartDashboard.putNumber(e.getKey(), (Double) o);
@@ -30,7 +36,7 @@ public class Stats {
 						}
 					}
 					try {
-						wait(100);
+						wait(0, 100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -50,14 +56,10 @@ public class Stats {
 	}
 	
 	public void add(StatElement<? extends Object> e) {
+		System.out.println("Adding " + e.getKey() + "...");
 		synchronized (elements) {
 			elements.add(e);
 		}
+		System.out.println("Added " + e.getKey());
 	}
-}
-
-interface StatElement<T> {
-	String getKey();
-	T getValue();
-	boolean isDone();
 }

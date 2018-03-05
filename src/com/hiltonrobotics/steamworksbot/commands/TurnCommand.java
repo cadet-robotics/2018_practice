@@ -1,6 +1,8 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
 import com.hiltonrobotics.steamworksbot.OI;
+import com.hiltonrobotics.steamworksbot.StatElement;
+import com.hiltonrobotics.steamworksbot.Stats;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.command.PIDCommand;
@@ -19,6 +21,23 @@ public class TurnCommand extends PIDCommand {
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
 		setSetpoint((OI.gyro.getAngle() - goalIn) % 360);
+		
+		Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "Goal";
+			}
+
+			@Override
+			public Double getValue() {
+				return goalIn;
+			}
+
+			@Override
+			public boolean isDone() {
+				return isCompleted();
+			}
+		});
 	}
 	
 	public TurnCommand(double goalIn) {
