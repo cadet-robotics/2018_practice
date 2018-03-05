@@ -1,0 +1,136 @@
+{
+  "dividerPosition": 0.2991202346041056,
+  "tabPane": [
+    {
+      "title": "Tab 1",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "2,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[7]/Value",
+              "_title": "Lift Limit Switch",
+              "colorWhenTrue": "#7CFC00FF",
+              "colorWhenFalse": "#8B0000FF"
+            }
+          },
+          "4,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[8]/Value",
+              "_title": "Upper Limit Switch",
+              "colorWhenTrue": "#7CFC00FF",
+              "colorWhenFalse": "#8B0000FF"
+            }
+          },
+          "2,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[9]/Value",
+              "_title": "Lower Limit Switch",
+              "colorWhenTrue": "#7CFC00FF",
+              "colorWhenFalse": "#8B0000FF"
+            }
+          },
+          "0,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PC Throttle",
+              "_title": "Arm Speed"
+            }
+          },
+          "0,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PC X",
+              "_title": "PC X"
+            }
+          },
+          "1,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PC Y",
+              "_title": "PC Y"
+            }
+          },
+          "1,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Arm Direction",
+              "_title": "Arm Direction"
+            }
+          },
+          "0,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Angle",
+              "_title": "Angle"
+            }
+          },
+          "0,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/List State",
+              "_title": "Lift State"
+            }
+          },
+          "2,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Claw Status",
+              "_title": "Claw Status",
+              "colorWhenTrue": "#7CFC00FF",
+              "colorWhenFalse": "#8B0000FF"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

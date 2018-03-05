@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
 				return false;
 			}
 		});
-		//SmartDashboard.getEntry("rot").
+		//SmartDashboard.getEntry("rot");
 		//OI.gyro.calibrate();
 	}
 
