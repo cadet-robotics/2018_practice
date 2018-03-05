@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
 		if (instance == null) {
 			instance = this;
 		}
-		//SmartDashboard.getEntry("rot").
+		SmartDashboard.getEntry("rot");
 		//OI.gyro.calibrate();
 	}
 
