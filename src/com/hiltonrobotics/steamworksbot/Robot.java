@@ -49,6 +49,22 @@ public class Robot extends TimedRobot {
 		if (instance == null) {
 			instance = this;
 		}
+		Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "Heading";
+			}
+
+			@Override
+			public Double getValue() {
+				return OI.gyro.getAngle() % 360;
+			}
+
+			@Override
+			public boolean isDone() {
+				return false;
+			}
+		});
 		//SmartDashboard.getEntry("rot").
 		//OI.gyro.calibrate();
 	}
@@ -127,7 +143,6 @@ public class Robot extends TimedRobot {
 			m_autonomousCommand.cancel();
 		}*/
 		System.out.println("Teleop Init");
-		OI.calibrateGyroSafe();
 		c = new TeleopCommand();
 		c.start();
 		Scheduler.getInstance().run();
@@ -137,42 +152,11 @@ public class Robot extends TimedRobot {
 	 * This function is called periodically during operator control.
 	 */
 	
-	//private int ticks = 0;
-	//private int state = -1;
-	
-	public void periodicActuator() {
-	/*	if ((ticks % 100) == 0) {
-			state = (state + 1) % 2;
-			switch (state) {
-				case 0: System.out.println("forward"); break;
-				//case 1: System.out.println("off"); break;
-				case 1: System.out.println("reverse"); break;
-			}
-		}
-		switch (state) {
-			case 0: OI.solenoid.set(DoubleSolenoid.Value.kForward); break;
-			//case 1: OI.solenoid.set(DoubleSolenoid.Value.kOff); break;
-			case 1: OI.solenoid.set(DoubleSolenoid.Value.kReverse); break;
-		}
-		++ticks;*/
-	}
-	
 	public void periodicGyro() {
-		//System.out.println(OI.gyro.getAngle());
 	}
 	
 	@Override
 	public void teleopPeriodic() {
-		//System.out.println(String.valueOf(OI.sensorDist.distMM()));
-		//OI.servo.setAngle(OI.joystick.getY() * 10 + 90);
-		//OI.servo.setAngle(OI.joystick.getY() * 4000);
-		
-		//periodicGyro();
-		
-		//OI.motor.setSpeed(0.5);
-		//System.out.println(OI.panel.getTotalPower());
-		
-		//TeleopControl.runPeriodic();
 		Scheduler.getInstance().run();
 		SmartDashboard.updateValues();
 	}

@@ -9,7 +9,7 @@ public class Stats {
 	public static double ROTATION_DISTANCE_MOVED = Math.PI * WEEL_DIAMETER;
 	
 	private Thread updates;
-	private ArrayList<StatElement<Object>> elements = new ArrayList<>();
+	private ArrayList<StatElement<? extends Object>> elements = new ArrayList<>();
 	private Stats() {
 		OI.calibrateGyroSafe();
 		updates = new Thread() {
@@ -18,7 +18,7 @@ public class Stats {
 				super.run();
 				while (!Thread.interrupted()) {
 					synchronized (updates) {
-						for (StatElement<Object> e : elements) {
+						for (StatElement<? extends Object> e : elements) {
 							Object o = e.getValue();
 							if (o instanceof Double) {
 								SmartDashboard.putNumber(e.getKey(), (Double) o);
@@ -37,6 +37,7 @@ public class Stats {
 				}
 			}
 		};
+		updates.start();
 	}
 	
 	private static Stats instance = null;
@@ -48,7 +49,7 @@ public class Stats {
 		return instance;
 	}
 	
-	public void add(StatElement<Object> e) {
+	public void add(StatElement<? extends Object> e) {
 		synchronized (elements) {
 			elements.add(e);
 		}
