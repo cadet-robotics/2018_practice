@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
 			throw new IllegalArgumentException();
 		}
 		*/
-		OI.calibrateGyroSafe();
+		//OI.calibrateGyroSafe();
 		c = new TurnCommand(90);//AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
 		c.start();
 	}
@@ -130,10 +130,15 @@ public class Robot extends TimedRobot {
 	/**
 	 * This function is called periodically during autonomous.
 	 */
+	
+	double timestamp = 0;
+	
 	@Override
 	public void autonomousPeriodic() {
-		Scheduler.getInstance().run();
-		SmartDashboard.updateValues();
+		//Scheduler.getInstance().run();
+		//SmartDashboard.updateValues();
+		if 
+		timestamp += getPeriod();
 	}
 
 	@Override
@@ -146,10 +151,12 @@ public class Robot extends TimedRobot {
 		/*if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}*/
+		
 		System.out.println("Teleop Init");
-		c = new TeleopCommand();
-		c.start();
-		Scheduler.getInstance().run();
+		//c = new TeleopCommand();
+		//c.start();
+		//Scheduler.getInstance().run();
+		TeleopControl.runInit();
 	}
 
 	/**
@@ -161,8 +168,10 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		Scheduler.getInstance().run();
-		SmartDashboard.updateValues();
+		//Scheduler.getInstance().run();
+		//SmartDashboard.updateValues();
+		
+		TeleopControl.runPeriodic();
 	}
 
 	/**

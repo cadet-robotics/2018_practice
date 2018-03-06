@@ -17,7 +17,7 @@ public class MoveCommand extends Command {
 	
 	private Double posChange = (double) 0, rotChange = (double) 0;
 	
-	private PIDController pidPos = new PIDController(2, 2, 2, new PIDSource() {
+	private PIDController pidPos = new PIDController(0.02, 0, 0, new PIDSource() {
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
 		}
@@ -34,6 +34,11 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
+			if (output < 0) {
+				if (output > -0.2) output = -0.2;
+			} else {
+				if (output < 0.2) output = 0.2;
+			}
 			synchronized (posChange) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}

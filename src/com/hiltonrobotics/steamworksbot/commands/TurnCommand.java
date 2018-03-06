@@ -17,7 +17,7 @@ public class TurnCommand extends PIDCommand {
 		super(P, I, D);
 		SmartDashboard.putNumber("turnTo", goalIn);
 		requires(DriveSubsystem.getInstance());
-		getPIDController().setAbsoluteTolerance(tolerance);
+		getPIDController().setPercentTolerance(DEFAULT_TOLERANCE);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
 		setSetpoint((OI.gyro.getAngle() - goalIn) % 360);
@@ -30,7 +30,8 @@ public class TurnCommand extends PIDCommand {
 
 			@Override
 			public Double getValue() {
-				return goalIn;
+				SmartDashboard.putNumber("turn", getSetpoint());
+				return getSetpoint();
 			}
 
 			@Override
@@ -73,7 +74,13 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected void usePIDOutput(double output) {
-		System.out.println(output);
+		if (output < 0) {
+			if (output > -0.2) output = -0.2;
+		} else {
+			if (output < 0.2) output = 0.2;
+		}
+		
+		SmartDashboard.putNumber("TurnSpeed", output);
 		
 		OI.leftMotor.setSpeed(output);
 		OI.rightMotor.setSpeed(output);
@@ -81,6 +88,9 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected boolean isFinished() {
-		return this.getPIDController().onTarget();
+		if (this.getPIDController().onTarget()) {
+			System.out.println("Finished turn command");
+			return true;
+		} else return false;
 	}
 }

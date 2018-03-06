@@ -11,15 +11,15 @@ public class Stats {
 	private Thread updates;
 	private ArrayList<StatElement<? extends Object>> elements = new ArrayList<>();
 	private Stats() {
-		OI.calibrateGyroSafe();
+		//OI.calibrateGyroSafe();
 		updates = new Thread() {
 			@Override
 			public void run() {
 				super.run();
 				while (!Thread.interrupted()) {
-					synchronized (updates) {
+					synchronized (elements) {
 						for (StatElement<? extends Object> e : elements) {
-							System.out.println("Running " + e.getKey());
+							//System.out.println("Running " + e.getKey());
 							if (e.isDone()) {
 								System.out.println("Removing " + e.getKey());
 								elements.remove(e);
