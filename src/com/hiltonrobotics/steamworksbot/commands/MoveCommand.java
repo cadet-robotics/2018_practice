@@ -34,11 +34,6 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
-			if (output < 0) {
-				if (output > -0.2) output = -0.2;
-			} else {
-				if (output < 0.2) output = 0.2;
-			}
 			synchronized (posChange) {
 				posChange = Math.max(Math.min(output, 0.6), -0.6);
 			}
@@ -108,8 +103,20 @@ public class MoveCommand extends Command {
 		synchronized (posChange) {
 			synchronized (rotChange) {
 				System.out.println(posChange + ", " + rotChange);
-				OI.leftMotor.set(Math.max(Math.min(rotChange + posChange, -1), 1) / 1.5);
-				OI.rightMotor.set(Math.max(Math.min(rotChange - posChange, -1), 1) / 1.5);
+				double leftSpeed = rotChange + posChange;
+				double rightSpeed = rotChange - posChange;
+				if (leftSpeed < 0) {
+					if (leftSpeed > -0.2) leftSpeed = -0.2;
+				} else {
+					if (leftSpeed < 0.2) leftSpeed = 0.2;
+				}
+				if (rightSpeed < 0) {
+					if (rightSpeed > -0.2) rightSpeed = -0.2;
+				} else {
+					if (rightSpeed < 0.2) rightSpeed = 0.2;
+				}
+				OI.leftMotor.set(leftSpeed);
+				OI.rightMotor.set(rightSpeed);
 			}
 		}
 	}
