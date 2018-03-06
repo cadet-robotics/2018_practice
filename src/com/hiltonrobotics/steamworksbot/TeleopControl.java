@@ -263,7 +263,6 @@ public class TeleopControl {
 		}
 	}
 	
-	public static void runInit() {											//Calibrate Owen's gyroscope
-		OI.calibrateGyroSafe();
+	public static void runInit() {
 	}
 }
