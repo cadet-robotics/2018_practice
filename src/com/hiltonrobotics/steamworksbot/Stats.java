@@ -18,12 +18,13 @@ public class Stats {
 				super.run();
 				while (!Thread.interrupted()) {
 					synchronized (elements) {
-						for (StatElement<? extends Object> e : elements) {
+						for (int i = 0; i < elements.size();) {
+							StatElement<? extends Object> e = elements.get(i);
 							//System.out.println("Running " + e.getKey());
 							if (e.isDone()) {
 								System.out.println("Removing " + e.getKey());
 								elements.remove(e);
-								continue;
+								continue; // Not incrementing i is intentional
 							}
 							Object o = e.getValue();
 							if (o instanceof Double) {
@@ -33,6 +34,7 @@ public class Stats {
 							} else {
 								SmartDashboard.putString(e.getKey(), o.toString());
 							}
+							i++;
 						}
 					}
 					try {

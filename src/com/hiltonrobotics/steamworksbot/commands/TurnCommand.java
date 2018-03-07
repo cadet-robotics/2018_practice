@@ -16,9 +16,10 @@ public class TurnCommand extends PIDCommand {
 	
 	public TurnCommand(double goalIn, double tolerance) {
 		super(P, I, D);
+		requires(DriveSubsystem.getInstance());
 		SmartDashboard.putNumber("turnTo", goalIn);
 		requires(DriveSubsystem.getInstance());
-		getPIDController().setPercentTolerance(DEFAULT_TOLERANCE);
+		getPIDController().setAbsoluteTolerance(DEFAULT_TOLERANCE);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
 		setSetpoint(JavaIsCancerChangeMyMind.moduloIsCancer((OI.gyro.getAngle() - goalIn), 360));
@@ -46,7 +47,7 @@ public class TurnCommand extends PIDCommand {
 		this(goalIn, DEFAULT_TOLERANCE);
 	}
 
-	public static final double DEFAULT_TOLERANCE = 0.01;
+	public static final double DEFAULT_TOLERANCE = 0.2;
 	
 	/*
 	@Override
@@ -76,9 +77,9 @@ public class TurnCommand extends PIDCommand {
 	@Override
 	protected void usePIDOutput(double output) {
 		if (output < 0) {
-			if (output > -0.2) output = -0.2;
+			if (output > -OI.MIN_MOTOR_SPEED) output = -OI.MIN_MOTOR_SPEED;
 		} else {
-			if (output < 0.2) output = 0.2;
+			if (output < OI.MIN_MOTOR_SPEED) output = OI.MIN_MOTOR_SPEED;
 		}
 		
 		SmartDashboard.putNumber("TurnSpeed", output);

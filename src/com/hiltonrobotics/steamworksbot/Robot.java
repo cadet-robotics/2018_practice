@@ -8,6 +8,7 @@
 package com.hiltonrobotics.steamworksbot;
 
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
+import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 import com.hiltonrobotics.steamworksbot.commands.TurnCommand;
 
@@ -123,7 +124,7 @@ public class Robot extends TimedRobot {
 		}
 		*/
 		//OI.calibrateGyroSafe();
-		c = new TurnCommand(90);//AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
+		c = new MoveCommand(24);//AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
 		c.start();
 	}
 

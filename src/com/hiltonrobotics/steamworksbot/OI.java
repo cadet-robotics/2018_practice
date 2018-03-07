@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+	public static final double MIN_MOTOR_SPEED = 0.2;
+	
 	//// CREATING BUTTONS
 	// One type of button is a joystick button which is any button on a
 	//// joystick.
@@ -98,7 +100,7 @@ public class OI {
 			System.out.println("Class " + e.getClassName() + " attempted to trigger callibration");
 		}
 		if (!hasGyroBeenCalibrated) {
-			gyro.calibrate();
+			//gyro.reset();//calibrate();
 		} else {
 			System.out.println("Stats class attempted to retrigger callibration");
 		}

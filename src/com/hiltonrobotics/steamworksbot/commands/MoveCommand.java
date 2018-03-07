@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class MoveCommand extends Command {
-	public static final double DEFAULT_TOLERANCE_POS = 0.005;
+	public static final double DEFAULT_TOLERANCE_POS = 0.1;
 	
 	private Double posChange = (double) 0, rotChange = (double) 0;
 	
@@ -35,13 +35,14 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
+			System.out.println("Made it");
 			if (output < 0) {
-				if (output > -0.1) output = -0.1;
+				if (output > -OI.MIN_MOTOR_SPEED) output = -OI.MIN_MOTOR_SPEED;
 			} else {
-				if (output < 0.1) output = 0.1;
+				if (output < OI.MIN_MOTOR_SPEED) output = OI.MIN_MOTOR_SPEED;
 			}
 			synchronized (posChange) {
-				posChange = Math.max(Math.min(output, 0.6), -0.6);
+				posChange = output;//Math.max(Math.min(output, 0.6), -0.6);
 			}
 		}
 	});
@@ -65,11 +66,11 @@ public class MoveCommand extends Command {
 	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
-			if (output < 0) {
-				if (output > -0.1) output = -0.1;
+			/*if (output < 0) {
+				if (output > -(OI.MIN_MOTOR_SPEED / 2)) output = -(OI.MIN_MOTOR_SPEED / 2);
 			} else {
-				if (output < 0.1) output = 0.1;
-			}
+				if (output < (OI.MIN_MOTOR_SPEED / 2)) output = (OI.MIN_MOTOR_SPEED / 2);
+			}*/
 			synchronized (rotChange) {
 				rotChange = output;
 			}
@@ -82,7 +83,7 @@ public class MoveCommand extends Command {
 		OI.rightEncoder.reset();
 		pidPos.setSetpoint(dist);
 		pidPos.setInputRange(dist * (-2), dist * 2);
-		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS * 4);
+		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS);
 		pidPos.enable();
 		
 		pidRot.setInputRange(0, 360);

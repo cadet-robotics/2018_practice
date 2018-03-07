@@ -19,6 +19,6 @@ public class DriveSubsystem extends Subsystem {
 	
 	@Override
 	public void initDefaultCommand() {
-		setDefaultCommand(new FreezeDriveCommand());
+		//setDefaultCommand(new FreezeDriveCommand());
 	}
 }
