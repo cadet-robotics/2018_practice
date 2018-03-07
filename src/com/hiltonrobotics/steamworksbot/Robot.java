@@ -135,10 +135,8 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		//Scheduler.getInstance().run();
-		//SmartDashboard.updateValues();
-		if 
-		timestamp += getPeriod();
+		Scheduler.getInstance().run();
+		SmartDashboard.updateValues();
 	}
 
 	@Override

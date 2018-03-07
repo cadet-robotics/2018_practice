@@ -1,5 +1,6 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
+import com.hiltonrobotics.steamworksbot.JavaIsCancerChangeMyMind;
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.StatElement;
 import com.hiltonrobotics.steamworksbot.Stats;
@@ -52,7 +53,7 @@ public class MoveCommand extends Command {
 		
 		@Override
 		public double pidGet() {
-			double d = OI.gyro.getAngle() % 360;
+			double d = JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
 			SmartDashboard.putNumber("rot", d);
 			return d;
 		}
@@ -86,7 +87,7 @@ public class MoveCommand extends Command {
 		
 		pidRot.setInputRange(0, 360);
 		pidRot.setContinuous();
-		double d = OI.gyro.getAngle() % 360;
+		double d = JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
 		Stats.getInstance().add(new StatElement<Double>() {
 			@Override
 			public String getKey() {

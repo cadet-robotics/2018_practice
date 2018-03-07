@@ -1,5 +1,6 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
+import com.hiltonrobotics.steamworksbot.JavaIsCancerChangeMyMind;
 import com.hiltonrobotics.steamworksbot.OI;
 import com.hiltonrobotics.steamworksbot.StatElement;
 import com.hiltonrobotics.steamworksbot.Stats;
@@ -20,7 +21,7 @@ public class TurnCommand extends PIDCommand {
 		getPIDController().setPercentTolerance(DEFAULT_TOLERANCE);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
-		setSetpoint((OI.gyro.getAngle() - goalIn) % 360);
+		setSetpoint(JavaIsCancerChangeMyMind.moduloIsCancer((OI.gyro.getAngle() - goalIn), 360));
 		
 		Stats.getInstance().add(new StatElement<Double>() {
 			@Override
@@ -69,7 +70,7 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected double returnPIDInput() {
-		return OI.gyro.getAngle() % 360;
+		return JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
 	}
 
 	@Override
