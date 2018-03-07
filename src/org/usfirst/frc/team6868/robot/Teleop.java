@@ -1,17 +1,16 @@
-package com.hiltonrobotics.steamworksbot;
+package org.usfirst.frc.team6868.robot;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class TeleopControl {
+public class Teleop {														//Class that holds teleop systems
 	
+																			//Variales used only in teleop
 	static String gameData = "";											//Game data string
 	static double controlX = 0;												//X-Axis of left joystick
 	static double controlY = 0;												//Y-Axis of left joystick
@@ -43,7 +42,7 @@ public class TeleopControl {
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
 	
-	public static void runPeriodic() {
+	public static void run() {
 		setInputs();														//Sets input variables
 		resetMotors();														//Resets motors
 		setClaw();															//Sets claw/arm position
@@ -60,7 +59,6 @@ public class TeleopControl {
 		double pcx = Double.parseDouble(f.format(OI.controller.getX()));
 		double pcy = Double.parseDouble(f.format(OI.controller.getY()));
 		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
-		double ang = Double.parseDouble(f.format(OI.gyro.getAngle() % 360));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
 		if(liftStatus == 0) {
@@ -76,7 +74,6 @@ public class TeleopControl {
 		SmartDashboard.putNumber("Arm Speed", pct);
 		SmartDashboard.putString("Arm Direction", armDir);
 		SmartDashboard.putBoolean("Claw Status", clawOpen);
-		SmartDashboard.putNumber("Angle",  ang);
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -107,7 +104,7 @@ public class TeleopControl {
 	
 	public static void setLiftMotors() {									//Set lift motors
 		if(altController) {													//Alternate controller setup
-			if(OI.buttonLB.get() && OI.limitLift.get()) {
+			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -117,7 +114,7 @@ public class TeleopControl {
 				OI.liftMotor3.setSpeed(-liftSpeed);
 			}
 		} else {															//Normal controller setup
-			if(OI.buttonLB.get() && OI.limitLift.get()) {												
+			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -261,8 +258,5 @@ public class TeleopControl {
 		} else {
 			rampPercent = 0.25;
 		}
-	}
-	
-	public static void runInit() {
 	}
 }
