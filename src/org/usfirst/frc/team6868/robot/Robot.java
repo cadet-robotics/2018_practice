@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team6868.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,13 @@ public class Robot extends TimedRobot {
 		m_chooser.addDefault("Default Auto", kDefaultAuto);
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
+		
+		CameraServer cam = CameraServer.getInstance();
+		UsbCamera camLeft = cam.startAutomaticCapture();
+		UsbCamera camRight = cam.startAutomaticCapture();
+		
+		camLeft.setResolution(440, 247);
+		camRight.setResolution(440, 247);
 	}
 
 	/**

@@ -21,7 +21,7 @@ public class Teleop {														//Class that holds teleop systems
 	static double moveSpeedTurn = 0.65;										//Turning-movement motor speed multiplier
 	static double leftMotorSpeed = 0;										//Absolute value for left motor speed
 	static double rightMotorSpeed = 0;										//Absolute value for right motor speed
-	static double clawSpeed = 0.8;											//Claw movement motor speed mutiplier
+	static double clawSpeed = 1;											//Claw movement motor speed mutiplier
 	static double clawMoveTrimSpeed = 0.15;									//Claw movement trim speed
 	static double liftSpeed = 0.7;											//Multiplier for the lift speed
 	static double clawSafeSpeed = 0.2;										//Speed for the claw to correct at limit switches
