@@ -1,5 +1,6 @@
 package com.hiltonrobotics.steamworksbot;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,6 +59,8 @@ public class Stats {
 	}
 	
 	public void add(StatElement<? extends Object> e) {
+		StackTraceElement trace = Thread.currentThread().getStackTrace()[1];
+		System.out.println(trace.getFileName() + ": " + trace.getLineNumber());
 		System.out.println("Adding " + e.getKey() + "...");
 		synchronized (elements) {
 			elements.add(e);

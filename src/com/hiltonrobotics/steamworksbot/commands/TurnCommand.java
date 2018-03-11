@@ -41,13 +41,30 @@ public class TurnCommand extends PIDCommand {
 				return isCompleted();
 			}
 		});
+		
+		Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "err";
+			}
+
+			@Override
+			public Double getValue() {
+				return getPIDController().getError();
+			}
+
+			@Override
+			public boolean isDone() {
+				return !isRunning();
+			}
+		});
 	}
 	
 	public TurnCommand(double goalIn) {
 		this(goalIn, DEFAULT_TOLERANCE);
 	}
 
-	public static final double DEFAULT_TOLERANCE = 0.2;
+	public static final double DEFAULT_TOLERANCE = 1;
 	
 	/*
 	@Override
@@ -78,12 +95,12 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected void usePIDOutput(double output) {
-		output = MoveCommand.clampAbs(output, OI.MIN_MOTOR_SPEED, 0.5);
+		output = MoveCommand.clampAbs(output, OI.MIN_TURN_SPEED, OI.MAX_TURN_SPEED);
 		
 		SmartDashboard.putNumber("TurnSpeed", output);
-		//System.out.println("turnSpeed: " + output);
-		OI.leftMotor.setSpeed(output);
-		OI.rightMotor.setSpeed(output);
+		System.out.println("turnSpeed: " + output);
+		OI.leftMotor.set(output);
+		OI.rightMotor.set(output);
 	}
 
 	@Override

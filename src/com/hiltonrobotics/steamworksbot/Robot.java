@@ -8,15 +8,16 @@
 package com.hiltonrobotics.steamworksbot;
 
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
-import com.hiltonrobotics.steamworksbot.commands.MoveCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
-import com.hiltonrobotics.steamworksbot.commands.TurnCommand;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+// Magic Mystery Units (TM)
+// 1 Magic Mystery Unit (TM) ~= 1 inch
 
 /**
  * The VM is configured to automatically run this class, and to call the

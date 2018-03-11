@@ -1,5 +1,7 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
+import com.hiltonrobotics.steamworksbot.OI;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -37,20 +39,20 @@ public class AutoCommand extends Command {
 					subcommand = new MoveCommand(30);
 					state = 4;
 				} else {
-					subcommand = new MoveCommand(12);
+					subcommand = new MoveCommand(8);
 				}
 				break;
 			case 1:
-				subcommand = new TurnCommand((offset > 0) ? -90 : 90);
+				subcommand = new TurnCommand((offset > 0) ? -90 : 90, 0.5);
 				break;
 			case 2:
-				subcommand = new MoveCommand(Math.abs(offset) * 36);
+				subcommand = new MoveCommand(Math.abs(offset) * 26);
 				break;
 			case 3:
 				subcommand = new TurnCommand((offset > 0) ? 90 : -90);
 				break;
 			case 4:
-				subcommand = new MoveCommand(18);
+				subcommand = new MoveCommand(22);
 				break;
 			case 5:
 				subcommand = new TurnCommand(isOursRight ? -90 : 90);
@@ -59,14 +61,20 @@ public class AutoCommand extends Command {
 				subcommand = new ArmExtremeCommand(true);
 				break;
 			case 7:
-				subcommand = new ClawCommand(true);
+				subcommand = new ShoveCommand(1.5, -0.4);//MoveCommand(-3);
 				break;
 			case 8:
-				subcommand = new MoveCommand(-12);
+				subcommand = new ClawCommand(true);
 				break;
 			case 9:
+				subcommand = new MoveCommand(4);
+				break;
+			case 10:
 				subcommand = new ClawCommand(false);
 				break;
+			/*case 11:
+				subcommand = new ArmExtremeCommand(false);
+				break;*/
 			default:
 				this.cancel();
 				System.out.println("Ending autonomous...");

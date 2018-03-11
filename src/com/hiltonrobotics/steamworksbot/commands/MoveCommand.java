@@ -125,8 +125,8 @@ public class MoveCommand extends Command {
 		synchronized (posChange) {
 			synchronized (rotChange) {
 				//System.out.println(posChange + ", " + rotChange);
-				double l = clampAbs(rotChange + posChange, 0, 1);
-				double r = clampAbs(rotChange - posChange, 0, 1);
+				double l = clampAbs(rotChange + posChange, 0, OI.MAX_MOTOR_SPEED);
+				double r = clampAbs(rotChange - posChange, 0, OI.MAX_MOTOR_SPEED);
 				//System.out.println("left: " + l);
 				//System.out.println("right: " + r);
 				OI.leftMotor.set(l);

@@ -24,7 +24,10 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	public static final double MIN_MOTOR_SPEED = 0.2;
+	public static final double MIN_MOTOR_SPEED = 0.4;
+	public static final double MAX_MOTOR_SPEED = 0.65;
+	public static final double MIN_TURN_SPEED = 0.5;
+	public static final double MAX_TURN_SPEED = 0.6;
 	
 	//// CREATING BUTTONS
 	// One type of button is a joystick button which is any button on a

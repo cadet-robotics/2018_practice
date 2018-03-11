@@ -23,8 +23,8 @@ public class ArmExtremeCommand extends Command {
 			OI.clawMotorR.set(0);
 		} else {
 			System.out.println("Running");
-			OI.clawMotorL.set(isTop ? -0.4 : 0.4);
-			OI.clawMotorR.set(isTop ? 0.4 : -0.4);
+			OI.clawMotorL.set(isTop ? 0.4 : -0.4);
+			OI.clawMotorR.set(isTop ? -0.4 : 0.4);
 		}
 	}
 

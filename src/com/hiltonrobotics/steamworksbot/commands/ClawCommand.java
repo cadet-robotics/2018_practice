@@ -30,6 +30,6 @@ public class ClawCommand extends Command {
 
 	@Override
 	protected boolean isFinished() {
-		return timeSinceInitialized() > 0.5;
+		return timeSinceInitialized() >= 0.5;
 	}
 }
