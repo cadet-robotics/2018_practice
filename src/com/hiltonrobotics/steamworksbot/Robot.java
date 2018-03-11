@@ -116,15 +116,14 @@ public class Robot extends TimedRobot {
 			m_autonomousCommand.start();
 		}*/
 		
-		/*
 		data = DriverStation.getInstance().getGameSpecificMessage();
 		System.out.println(data);
 		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		//OI.calibrateGyroSafe();
-		c = new MoveCommand(24);//AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
+		
+		c = new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
 		c.start();
 	}
 
@@ -152,9 +151,9 @@ public class Robot extends TimedRobot {
 		}*/
 		
 		System.out.println("Teleop Init");
-		//c = new TeleopCommand();
-		//c.start();
-		//Scheduler.getInstance().run();
+		c = new TeleopCommand();
+		c.start();
+		Scheduler.getInstance().run();
 		TeleopControl.runInit();
 	}
 
@@ -167,10 +166,10 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		//Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
 		//SmartDashboard.updateValues();
 		
-		TeleopControl.runPeriodic();
+		//TeleopControl.runPeriodic();
 	}
 
 	/**

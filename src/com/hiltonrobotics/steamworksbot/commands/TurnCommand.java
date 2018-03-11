@@ -19,7 +19,7 @@ public class TurnCommand extends PIDCommand {
 		requires(DriveSubsystem.getInstance());
 		SmartDashboard.putNumber("turnTo", goalIn);
 		requires(DriveSubsystem.getInstance());
-		getPIDController().setAbsoluteTolerance(DEFAULT_TOLERANCE);
+		getPIDController().setAbsoluteTolerance(tolerance);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
 		setSetpoint(JavaIsCancerChangeMyMind.moduloIsCancer((OI.gyro.getAngle() - goalIn), 360));
@@ -71,19 +71,17 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected double returnPIDInput() {
-		return JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
+		double d = JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
+		//System.out.println("in: " + d);
+		return d;
 	}
 
 	@Override
 	protected void usePIDOutput(double output) {
-		if (output < 0) {
-			if (output > -OI.MIN_MOTOR_SPEED) output = -OI.MIN_MOTOR_SPEED;
-		} else {
-			if (output < OI.MIN_MOTOR_SPEED) output = OI.MIN_MOTOR_SPEED;
-		}
+		output = MoveCommand.clampAbs(output, OI.MIN_MOTOR_SPEED, 0.5);
 		
 		SmartDashboard.putNumber("TurnSpeed", output);
-		
+		//System.out.println("turnSpeed: " + output);
 		OI.leftMotor.setSpeed(output);
 		OI.rightMotor.setSpeed(output);
 	}

@@ -34,7 +34,7 @@ public class AutoCommand extends Command {
 		switch (state) {
 			case 0:
 				if (offset == 0) {
-					subcommand = new MoveCommand(24);
+					subcommand = new MoveCommand(30);
 					state = 4;
 				} else {
 					subcommand = new MoveCommand(12);
@@ -50,10 +50,22 @@ public class AutoCommand extends Command {
 				subcommand = new TurnCommand((offset > 0) ? 90 : -90);
 				break;
 			case 4:
-				subcommand = new MoveCommand(12);
+				subcommand = new MoveCommand(18);
 				break;
 			case 5:
-				subcommand = new TurnCommand(isOursRight ? 90 : -90);
+				subcommand = new TurnCommand(isOursRight ? -90 : 90);
+				break;
+			case 6:
+				subcommand = new ArmExtremeCommand(true);
+				break;
+			case 7:
+				subcommand = new ClawCommand(true);
+				break;
+			case 8:
+				subcommand = new MoveCommand(-12);
+				break;
+			case 9:
+				subcommand = new ClawCommand(false);
 				break;
 			default:
 				this.cancel();

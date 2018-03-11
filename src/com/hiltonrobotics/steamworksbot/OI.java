@@ -83,12 +83,43 @@ public class OI {
 	public static Solenoid lift2 = new Solenoid(3);										//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
 	
+	public static final double PULSE_PER_ROT = 1440;
 	public static Encoder leftEncoder = new Encoder(1, 0); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	public static Encoder rightEncoder = new Encoder(3, 2); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	static {
 		rightEncoder.setReverseDirection(true); // Right motor is inverted, so right encoder is inverted
-		leftEncoder.setDistancePerPulse(Stats.ROTATION_DISTANCE_MOVED);
-		rightEncoder.setDistancePerPulse(Stats.ROTATION_DISTANCE_MOVED);
+		/*Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "leftEncoder";
+			}
+
+			@Override
+			public Double getValue() {
+				return leftEncoder.getDistance();
+			}
+
+			@Override
+			public boolean isDone() {
+				return false;
+			}
+		});*/
+		/*Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "rightEncoder";
+			}
+
+			@Override
+			public Double getValue() {
+				return rightEncoder.getDistance();
+			}
+
+			@Override
+			public boolean isDone() {
+				return false;
+			}
+		});*/
 	}
 	
 	public static Gyro gyro = new ADXRS450_Gyro();
