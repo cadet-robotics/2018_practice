@@ -19,7 +19,7 @@ public class TurnCommand extends PIDCommand {
 		requires(DriveSubsystem.getInstance());
 		SmartDashboard.putNumber("turnTo", goalIn);
 		requires(DriveSubsystem.getInstance());
-		getPIDController().setAbsoluteTolerance(DEFAULT_TOLERANCE);
+		getPIDController().setAbsoluteTolerance(tolerance);
 		setInputRange(0, 360);
 		getPIDController().setContinuous();
 		setSetpoint(JavaIsCancerChangeMyMind.moduloIsCancer((OI.gyro.getAngle() - goalIn), 360));
@@ -41,13 +41,30 @@ public class TurnCommand extends PIDCommand {
 				return isCompleted();
 			}
 		});
+		
+		Stats.getInstance().add(new StatElement<Double>() {
+			@Override
+			public String getKey() {
+				return "err";
+			}
+
+			@Override
+			public Double getValue() {
+				return getPIDController().getError();
+			}
+
+			@Override
+			public boolean isDone() {
+				return !isRunning();
+			}
+		});
 	}
 	
 	public TurnCommand(double goalIn) {
 		this(goalIn, DEFAULT_TOLERANCE);
 	}
 
-	public static final double DEFAULT_TOLERANCE = 0.2;
+	public static final double DEFAULT_TOLERANCE = 1;
 	
 	/*
 	@Override
@@ -71,21 +88,19 @@ public class TurnCommand extends PIDCommand {
 
 	@Override
 	protected double returnPIDInput() {
-		return JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
+		double d = JavaIsCancerChangeMyMind.moduloIsCancer(OI.gyro.getAngle(), 360);
+		//System.out.println("in: " + d);
+		return d;
 	}
 
 	@Override
 	protected void usePIDOutput(double output) {
-		if (output < 0) {
-			if (output > -OI.MIN_MOTOR_SPEED) output = -OI.MIN_MOTOR_SPEED;
-		} else {
-			if (output < OI.MIN_MOTOR_SPEED) output = OI.MIN_MOTOR_SPEED;
-		}
+		output = MoveCommand.clampAbs(output, OI.MIN_TURN_SPEED, OI.MAX_TURN_SPEED);
 		
 		SmartDashboard.putNumber("TurnSpeed", output);
-		
-		OI.leftMotor.setSpeed(output);
-		OI.rightMotor.setSpeed(output);
+		System.out.println("turnSpeed: " + output);
+		OI.leftMotor.set(output);
+		OI.rightMotor.set(output);
 	}
 
 	@Override

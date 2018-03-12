@@ -2,6 +2,7 @@ package com.hiltonrobotics.steamworksbot.commands;
 
 import com.hiltonrobotics.steamworksbot.TeleopControl;
 import com.hiltonrobotics.steamworksbot.subsystems.ArmSubsystem;
+import com.hiltonrobotics.steamworksbot.subsystems.ClawSubsystem;
 import com.hiltonrobotics.steamworksbot.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -11,6 +12,7 @@ public class TeleopCommand extends Command {
 	public TeleopCommand() {
 		requires(DriveSubsystem.getInstance());
 		requires(ArmSubsystem.getInstance());
+		requires(ClawSubsystem.getInstance());
 	}
 	
 	@Override
