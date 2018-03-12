@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.AllocationException;
 
 // Magic Mystery Units (TM)
 // 1 Magic Mystery Unit (TM) ~= 1 inch
@@ -27,12 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	//public static final ExampleSubsystem kExampleSubsystem
-	//		= new ExampleSubsystem();
-	public static OI m_oi;
-
-	/*Command m_autonomousCommand;
-	SendableChooser<Command> m_chooser = new SendableChooser<>();*/
+	//Command m_autonomousCommand;
+	//SendableChooser<Command> m_chooser = new SendableChooser<>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -41,10 +39,10 @@ public class Robot extends TimedRobot {
 	//public static AutoCamManager camManager = null;
 	public static Robot instance;
 	
+	public static Autonomous_Alex alex = null;
 	@Override
 	public void robotInit() {
-		/*m_oi = new OI();
-		m_chooser.addDefault("Default Auto", new ExampleCommand());*/
+		//m_chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		
@@ -118,14 +116,18 @@ public class Robot extends TimedRobot {
 		}*/
 		
 		data = DriverStation.getInstance().getGameSpecificMessage();
+		int mode = DriverStation.getInstance().getLocation() - 1;
 		System.out.println(data);
 		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
 		//OI.calibrateGyroSafe();
-		
-		c = new AutoCommand(DriverStation.getInstance().getLocation() - 1, data.charAt(0) == 'R');
-		c.start();
+		if (mode == 4) {
+			alex = new Autonomous_Alex();
+		} else {
+			c = new AutoCommand(mode, data.charAt(0) == 'R');
+			c.start();
+		}
 	}
 
 	/**
@@ -136,8 +138,11 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		Scheduler.getInstance().run();
-		SmartDashboard.updateValues();
+		if (alex == null) {
+			Scheduler.getInstance().run();
+		} else {
+			alex.run();
+		}
 	}
 
 	@Override
