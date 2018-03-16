@@ -85,10 +85,10 @@ public class TeleopControl {
 	public static void setLiftPosition() {									//Set which winch is being used
 		if(OI.buttonB.get() && newBButtonPress) {							//Get separate presses of the B button
 			newBButtonPress = false;
-			if (liftStatus == LIFT_HOOK_STATE) {
-				liftStatus = LIFT_ROBOT_STATE;
-			} else if (liftStatus == LIFT_ROBOT_STATE) {
+			if (liftStatus == LIFT_ROBOT_STATE) {
 				liftStatus = LIFT_HOOK_STATE;
+			} else {
+				liftStatus = LIFT_ROBOT_STATE;
 			}
 		} else if(!OI.buttonB.get() && !newBButtonPress) {
 			newBButtonPress = true;

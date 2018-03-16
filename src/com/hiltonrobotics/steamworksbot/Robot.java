@@ -8,6 +8,7 @@
 package com.hiltonrobotics.steamworksbot;
 
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
+import com.hiltonrobotics.steamworksbot.commands.ShoveCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
 import edu.wpi.cscore.UsbCamera;
@@ -138,8 +139,9 @@ public class Robot extends TimedRobot {
 		}
 		System.out.println("mode: " + mode);
 		
-		if (mode == 4) {
-			alex = new Autonomous_Alex();
+		if (mode == 3) {
+			//alex = new Autonomous_Alex();
+			c = new ShoveCommand(5, OI.MIN_MOTOR_SPEED + 0.5);
 		} else {
 			c = new AutoCommand(mode, data.charAt(0) == 'R');
 			c.start();
