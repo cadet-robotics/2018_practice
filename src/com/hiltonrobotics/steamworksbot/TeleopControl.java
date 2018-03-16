@@ -102,7 +102,7 @@ public class TeleopControl {
 				OI.hookSol.set(true);
 				OI.winchSol.set(false);
 			} else {
-				liftStatus = 0;
+				liftStatus = LOCK_ROBOT_STATE;
 			}
 		}
 	}
