@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopControl {
 	
+	static final int LIFT_HOOK_STATE = 0;
+	static final int LIFT_ROBOT_STATE = 2;
+	
 	static String gameData = "";											//Game data string
 	static double controlX = 0;												//X-Axis of left joystick
 	static double controlY = 0;												//Y-Axis of left joystick
@@ -29,7 +32,7 @@ public class TeleopControl {
 	static double rampPercent = 0.25;										//Power multiplier for drive motors - Ramps up while held
 	static double rampIncr = 0.05;											//Linear increment for ramping
 	static int dpad = 0;													//Value for the dpad 'angle'
-	static int liftStatus = 0;												//Number for what state the lift is in
+	static int liftStatus = LIFT_HOOK_STATE;								//Number for what state the lift is in
 	static int liftStatusPrev = -1;											//Previous state of the lift
 	static boolean dpadUp = false;											//D-pad up button
 	static boolean dpadDown = false;										//D-pad down button
@@ -43,10 +46,6 @@ public class TeleopControl {
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
-	
-	static final int LOCK_ROBOT_STATE = 0;
-	static final int LIFT_HOOK_STATE = 1;
-	static final int LIFT_ROBOT_STATE = 2;
 	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
@@ -67,9 +66,7 @@ public class TeleopControl {
 		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
-		if(liftStatus == LOCK_ROBOT_STATE) {
-			SmartDashboard.putString("Lift State", "Lock Robot");
-		} else if(liftStatus == LIFT_HOOK_STATE) {
+		if(liftStatus == LIFT_HOOK_STATE) {
 			SmartDashboard.putString("Lift State",  "Lift Hook");
 		} else if(liftStatus == LIFT_ROBOT_STATE) {
 			SmartDashboard.putString("Lift State", "Lift Robot");
@@ -85,9 +82,7 @@ public class TeleopControl {
 	public static void setLiftPosition() {									//Set which winch is being used
 		if(OI.buttonB.get() && newBButtonPress) {							//Get separate presses of the B button
 			newBButtonPress = false;
-			if (liftStatus == LIFT_ROBOT_STATE) {
-				liftStatus = LIFT_HOOK_STATE;
-			} else {
+			if (liftStatus != LIFT_ROBOT_STATE) {
 				liftStatus = LIFT_ROBOT_STATE;
 			}
 		} else if(!OI.buttonB.get() && !newBButtonPress) {
@@ -96,7 +91,7 @@ public class TeleopControl {
 		
 		if(OI.buttonX.get() && newXButtonPress) {							//Get separate presses of the B button
 			newXButtonPress = false;
-			liftStatus = LOCK_ROBOT_STATE;
+			liftStatus = LIFT_HOOK_STATE;
 		} else if(!OI.buttonX.get() && !newXButtonPress) {
 			newXButtonPress = true;
 		}
@@ -104,24 +99,19 @@ public class TeleopControl {
 		if(liftStatusPrev != liftStatus) {									//Change solenoid if it needs to be changed, don't set every tick
 			liftStatusPrev = liftStatus;
 			
-			if(liftStatus == LOCK_ROBOT_STATE) {
+			if(liftStatus == LIFT_HOOK_STATE) {
 				OI.hookSol.set(true);
-				OI.winchSol.set(false);
-			} else if(liftStatus == LIFT_HOOK_STATE) {
-				OI.hookSol.set(false);
 				OI.winchSol.set(false);
 			} else if(liftStatus == LIFT_ROBOT_STATE) {
 				OI.hookSol.set(false);
 				OI.winchSol.set(true);
-			} else {
-				liftStatus = LOCK_ROBOT_STATE;
 			}
 		}
 	}
 	
 	public static void setLiftMotors() {									//Set lift motors
 		if(altController) {													//Alternate controller setup
-			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {
+			if(OI.buttonLB.get() && OI.limitLift.get()) {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -131,11 +121,11 @@ public class TeleopControl {
 				OI.liftMotor3.setSpeed(-liftSpeed);
 			}
 		} else {															//Normal controller setup
-			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {												
+			if(OI.buttonLT.get() && OI.limitLift.get()) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
-			} else if(OI.buttonLT.get()) {									//Reverse lift
+			} else if(OI.buttonLB.get()) {									//Reverse lift
 				OI.liftMotor1.setSpeed(-liftSpeed);
 				OI.liftMotor2.setSpeed(-liftSpeed);
 				OI.liftMotor3.setSpeed(-liftSpeed);

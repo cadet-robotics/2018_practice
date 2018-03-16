@@ -7,6 +7,8 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import java.nio.channels.ShutdownChannelGroupException;
+
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.ShoveCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
@@ -138,14 +140,15 @@ public class Robot extends TimedRobot {
 			default: mode = -1;
 		}
 		System.out.println("mode: " + mode);
+		SmartDashboard.putNumber("mode", mode);
 		
 		if (mode == 3) {
 			//alex = new Autonomous_Alex();
-			c = new ShoveCommand(5, OI.MIN_MOTOR_SPEED + 0.5);
+			c = new ShoveCommand(5, 0.4);
 		} else {
 			c = new AutoCommand(mode, data.charAt(0) == 'R');
-			c.start();
 		}
+		c.start();
 	}
 
 	/**
