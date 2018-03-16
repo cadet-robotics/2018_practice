@@ -43,6 +43,10 @@ public class TeleopControl {
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
 	
+	public static final int LOCK_STATE = 0;
+	public static final int LIFT_HOOK_STATE = 1;
+	public static final int LIFT_ROBOT_STATE = 2;
+	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
 		resetMotors();														//Resets motors
@@ -63,11 +67,11 @@ public class TeleopControl {
 		double ang = Double.parseDouble(f.format(OI.gyro.getAngle() % 360));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
-		if(liftStatus == 0) {
+		if(liftStatus == LOCK_STATE) {
 			SmartDashboard.putString("Lift State", "Lock Robot");
-		} else if(liftStatus == 1) {
+		} else if(liftStatus == LIFT_HOOK_STATE) {
 			SmartDashboard.putString("List State",  "Lift Hook");
-		} else if(liftStatus == 2) {
+		} else if(liftStatus == LIFT_ROBOT_STATE) {
 			SmartDashboard.putString("Lift State", "Lift Robot");
 		}
 		
@@ -90,17 +94,17 @@ public class TeleopControl {
 		if(liftStatusPrev != liftStatus) {									//Change solenoid if it needs to be changed, don't set every tick
 			liftStatusPrev = liftStatus;
 			
-			if(liftStatus == 0) { // Red = 2 black = 1
+			if(liftStatus == LOCK_STATE) { // Red = 2 black = 1
 				OI.lift1.set(false);
 				OI.lift2.set(true);
-			} else if(liftStatus == 1) {
+			} else if(liftStatus == LIFT_HOOK_STATE) {
 				OI.lift1.set(false);
 				OI.lift2.set(true);
-			} else if(liftStatus == 2) {
+			} else if(liftStatus == LIFT_ROBOT_STATE) {
 				OI.lift1.set(true);
 				OI.lift2.set(false);
 			} else {
-				liftStatus = 0;
+				liftStatus = LOCK_STATE;
 			}
 		}
 	}
