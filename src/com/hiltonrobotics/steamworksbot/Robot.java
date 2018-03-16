@@ -10,6 +10,8 @@ package com.hiltonrobotics.steamworksbot;
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -47,6 +49,10 @@ public class Robot extends TimedRobot {
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		
 		//camManager = AutoCamManager.getInstance();
+		CameraServer s = CameraServer.getInstance();
+		UsbCamera cam = s.startAutomaticCapture();
+		cam.setResolution(640, 480);
+		
 		if (instance == null) {
 			instance = this;
 		}
@@ -160,7 +166,7 @@ public class Robot extends TimedRobot {
 		c = new TeleopCommand();
 		c.start();
 		Scheduler.getInstance().run();
-		TeleopControl.runInit();
+		//TeleopControl.runInit();
 	}
 
 	/**

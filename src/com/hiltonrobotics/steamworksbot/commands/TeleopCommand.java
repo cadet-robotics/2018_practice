@@ -18,7 +18,7 @@ public class TeleopCommand extends Command {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		TeleopControl.runInit();
+		//TeleopControl.runInit();
 	}
 	
 	@Override

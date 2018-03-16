@@ -82,8 +82,8 @@ public class OI {
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
 	public static VictorSP liftMotor2 = new VictorSP(5);								//Motor to operate the lift (2)
 	public static DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
-	public static Solenoid lift1 = new Solenoid(2);										//Lift solenoid 1
-	public static Solenoid lift2 = new Solenoid(3);										//Lift solenoid 2
+	public static Solenoid hookSol = new Solenoid(2);									//Lift solenoid 1
+	public static Solenoid winchSol = new Solenoid(3);									//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
 	
 	public static final double PULSE_PER_ROT = 1440;

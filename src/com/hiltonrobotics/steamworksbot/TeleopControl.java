@@ -18,11 +18,11 @@ public class TeleopControl {
 	static double controlLT = 0;											//Value for LT
 	static double controlRT = 0;											//Value for RT
 	static double controlThrottle = 0;										//Throttle-Axis of the right joystick
-	static double moveSpeedForwards = 0.7;									//Forwards-movement motor speed multiplier
-	static double moveSpeedTurn = 0.65;										//Turning-movement motor speed multiplier
+	static double moveSpeedForwards = 0.85;									//Forwards-movement motor speed multiplier
+	static double moveSpeedTurn = 0.7;										//Turning-movement motor speed multiplier
 	static double leftMotorSpeed = 0;										//Absolute value for left motor speed
 	static double rightMotorSpeed = 0;										//Absolute value for right motor speed
-	static double clawSpeed = 0.8;											//Claw movement motor speed mutiplier
+	static double clawSpeed = 1;											//Claw movement motor speed mutiplier
 	static double clawMoveTrimSpeed = 0.15;									//Claw movement trim speed
 	static double liftSpeed = 0.7;											//Multiplier for the lift speed
 	static double clawSafeSpeed = 0.2;										//Speed for the claw to correct at limit switches
@@ -43,6 +43,10 @@ public class TeleopControl {
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
 	
+	static final int LOCK_ROBOT_STATE = 0;
+	static final int LIFT_HOOK_STATE = 1;
+	static final int LIFT_ROBOT_STATE = 2;
+	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
 		resetMotors();														//Resets motors
@@ -60,14 +64,13 @@ public class TeleopControl {
 		double pcx = Double.parseDouble(f.format(OI.controller.getX()));
 		double pcy = Double.parseDouble(f.format(OI.controller.getY()));
 		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
-		double ang = Double.parseDouble(f.format(OI.gyro.getAngle() % 360));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
-		if(liftStatus == 0) {
+		if(liftStatus == LOCK_ROBOT_STATE) {
 			SmartDashboard.putString("Lift State", "Lock Robot");
-		} else if(liftStatus == 1) {
-			SmartDashboard.putString("List State",  "Lift Hook");
-		} else if(liftStatus == 2) {
+		} else if(liftStatus == LIFT_HOOK_STATE) {
+			SmartDashboard.putString("Lift State",  "Lift Hook");
+		} else if(liftStatus == LIFT_ROBOT_STATE) {
 			SmartDashboard.putString("Lift State", "Lift Robot");
 		}
 		
@@ -76,7 +79,6 @@ public class TeleopControl {
 		SmartDashboard.putNumber("Arm Speed", pct);
 		SmartDashboard.putString("Arm Direction", armDir);
 		SmartDashboard.putBoolean("Claw Status", clawOpen);
-		SmartDashboard.putNumber("Angle",  ang);
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -90,15 +92,15 @@ public class TeleopControl {
 		if(liftStatusPrev != liftStatus) {									//Change solenoid if it needs to be changed, don't set every tick
 			liftStatusPrev = liftStatus;
 			
-			if(liftStatus == 0) { // Red = 2 black = 1
-				OI.lift1.set(false);
-				OI.lift2.set(true);
-			} else if(liftStatus == 1) {
-				OI.lift1.set(false);
-				OI.lift2.set(true);
-			} else if(liftStatus == 2) {
-				OI.lift1.set(true);
-				OI.lift2.set(false);
+			if(liftStatus == LOCK_ROBOT_STATE) {
+				OI.hookSol.set(false);
+				OI.winchSol.set(true);
+			} else if(liftStatus == LIFT_HOOK_STATE) {
+				OI.hookSol.set(false);
+				OI.winchSol.set(false);
+			} else if(liftStatus == LIFT_ROBOT_STATE) {
+				OI.hookSol.set(true);
+				OI.winchSol.set(false);
 			} else {
 				liftStatus = 0;
 			}
@@ -107,7 +109,7 @@ public class TeleopControl {
 	
 	public static void setLiftMotors() {									//Set lift motors
 		if(altController) {													//Alternate controller setup
-			if(OI.buttonLB.get() && OI.limitLift.get()) {
+			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -117,7 +119,7 @@ public class TeleopControl {
 				OI.liftMotor3.setSpeed(-liftSpeed);
 			}
 		} else {															//Normal controller setup
-			if(OI.buttonLB.get() && OI.limitLift.get()) {												
+			if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
@@ -261,8 +263,5 @@ public class TeleopControl {
 		} else {
 			rampPercent = 0.25;
 		}
-	}
-	
-	public static void runInit() {
 	}
 }
