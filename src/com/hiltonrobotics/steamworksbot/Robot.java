@@ -122,12 +122,22 @@ public class Robot extends TimedRobot {
 		}*/
 		
 		data = DriverStation.getInstance().getGameSpecificMessage();
-		int mode = DriverStation.getInstance().getLocation() - 1;
 		System.out.println(data);
 		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
 		//OI.calibrateGyroSafe();
+		
+		int mode;//DriverStation.getInstance().getLocation() - 1;
+		switch ((OI.pos1.get() ? 0 : 1) + (OI.pos2.get() ? 0 : 2) + (OI.pos3.get() ? 0 : 4) + ((OI.pos4.getVoltage() > 2.5) ? 0 : 8)) {
+			case 1: mode = 0; break;
+			case 2: mode = 1; break;
+			case 4: mode = 2; break;
+			case 8: mode = 3; break;
+			default: mode = -1;
+		}
+		System.out.println("mode: " + mode);
+		
 		if (mode == 4) {
 			alex = new Autonomous_Alex();
 		} else {
