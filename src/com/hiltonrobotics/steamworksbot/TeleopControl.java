@@ -105,14 +105,14 @@ public class TeleopControl {
 			liftStatusPrev = liftStatus;
 			
 			if(liftStatus == LOCK_ROBOT_STATE) {
-				OI.hookSol.set(false);
-				OI.winchSol.set(true);
+				OI.hookSol.set(true);
+				OI.winchSol.set(false);
 			} else if(liftStatus == LIFT_HOOK_STATE) {
 				OI.hookSol.set(false);
 				OI.winchSol.set(false);
 			} else if(liftStatus == LIFT_ROBOT_STATE) {
-				OI.hookSol.set(true);
-				OI.winchSol.set(false);
+				OI.hookSol.set(false);
+				OI.winchSol.set(true);
 			} else {
 				liftStatus = LOCK_ROBOT_STATE;
 			}
@@ -246,6 +246,7 @@ public class TeleopControl {
 				OI.buttonLB = new JoystickButton(OI.controller2, 5);
 				OI.buttonLT = new JoystickButton(OI.controller2, 7);
 				OI.buttonB = new JoystickButton(OI.controller2, 3);
+				OI.buttonX = new JoystickButton(OI.controller2, 1);
 			} else {
 				OI.buttonLB = new JoystickButton(OI.controller, 5);
 				OI.buttonLT = new JoystickButton(OI.controller, 7);
