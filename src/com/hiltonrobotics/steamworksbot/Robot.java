@@ -10,13 +10,12 @@ package com.hiltonrobotics.steamworksbot;
 import com.hiltonrobotics.steamworksbot.commands.AutoCommand;
 import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.AllocationException;
 
 // Magic Mystery Units (TM)
 // 1 Magic Mystery Unit (TM) ~= 1 inch
@@ -47,6 +46,14 @@ public class Robot extends TimedRobot {
 		//SmartDashboard.putData("Auto mode", m_chooser);
 		
 		//camManager = AutoCamManager.getInstance();
+		
+		CameraServer camServer = CameraServer.getInstance();
+		for (int i = 0; i < 2; ++i) {
+			UsbCamera cam = camServer.startAutomaticCapture((i == 0) ? "left" : "right", i);
+			cam.setExposureAuto();
+			cam.setResolution(640, 480);
+		}
+		
 		if (instance == null) {
 			instance = this;
 		}
@@ -116,18 +123,29 @@ public class Robot extends TimedRobot {
 		}*/
 		
 		data = DriverStation.getInstance().getGameSpecificMessage();
-		int mode = DriverStation.getInstance().getLocation() - 1;
+		int mode;//DriverStation.getInstance().getLocation() - 1;
 		System.out.println(data);
 		if (!data.matches("[LR][LR][LR]")) {
 			throw new IllegalArgumentException();
 		}
 		//OI.calibrateGyroSafe();
-		if (mode == 4) {
-			alex = new Autonomous_Alex();
-		} else {
-			c = new AutoCommand(mode, data.charAt(0) == 'R');
-			c.start();
+		switch ((OI.pos1.get() ? 0 : 1) + (OI.pos2.get() ? 0 : 2) + (OI.pos3.get() ? 0 : 4) + ((OI.pos4.getVoltage() > 2.5) ? 0 : 8)) {
+			case 1: mode = 0; break;
+			case 2: mode = 1; break;
+			case 4: mode = 2; break;
+			case 8: mode = 3; break;
+			default: mode = -1;
 		}
+		System.out.println("mode: " + mode);
+		if (mode == 3) {
+			
+		} else {
+			//c = new AutoCommand(mode, data.charAt(0) == 'R');
+			//c.start();
+		}
+		
+		alex = new Autonomous_Alex();
+		alex.run();
 	}
 
 	/**

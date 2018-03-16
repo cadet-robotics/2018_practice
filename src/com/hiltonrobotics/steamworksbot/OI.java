@@ -8,6 +8,7 @@
 package com.hiltonrobotics.steamworksbot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -86,12 +87,35 @@ public class OI {
 	public static Solenoid lift2 = new Solenoid(3);										//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
 	
+	public static DigitalInput pos1 = new DigitalInput(4);
+	public static DigitalInput pos2 = new DigitalInput(5);
+	public static DigitalInput pos3 = new DigitalInput(6);
+	public static AnalogInput pos4 = new AnalogInput(0);
+	static {
+		Stats.getInstance().add(new StatElement<String>() {
+			@Override
+			public String getKey() {
+				return "switch";
+			}
+
+			@Override
+			public String getValue() {
+				return pos1.get() + ", " + pos2.get() + ", " + pos3.get() + ", " + pos4.getVoltage();
+			}
+
+			@Override
+			public boolean isDone() {
+				return false;
+			}
+		});
+	}
+	
 	public static final double PULSE_PER_ROT = 1440;
 	public static Encoder leftEncoder = new Encoder(1, 0); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	public static Encoder rightEncoder = new Encoder(3, 2); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	static {
 		rightEncoder.setReverseDirection(true); // Right motor is inverted, so right encoder is inverted
-		/*Stats.getInstance().add(new StatElement<Double>() {
+		Stats.getInstance().add(new StatElement<Double>() {
 			@Override
 			public String getKey() {
 				return "leftEncoder";
@@ -106,8 +130,8 @@ public class OI {
 			public boolean isDone() {
 				return false;
 			}
-		});*/
-		/*Stats.getInstance().add(new StatElement<Double>() {
+		});
+		Stats.getInstance().add(new StatElement<Double>() {
 			@Override
 			public String getKey() {
 				return "rightEncoder";
@@ -122,7 +146,7 @@ public class OI {
 			public boolean isDone() {
 				return false;
 			}
-		});*/
+		});
 	}
 	
 	public static Gyro gyro = new ADXRS450_Gyro();

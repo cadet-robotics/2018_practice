@@ -1,5 +1,6 @@
 package com.hiltonrobotics.steamworksbot;
 
+import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 
@@ -46,6 +47,12 @@ public class Stats {
 				}
 			}
 		};
+		updates.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				SmartDashboard.putString("err", e.getMessage());
+			}
+		});
 		updates.start();
 	}
 	

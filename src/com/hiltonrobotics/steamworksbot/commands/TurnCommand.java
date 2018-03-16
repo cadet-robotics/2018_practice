@@ -32,7 +32,6 @@ public class TurnCommand extends PIDCommand {
 
 			@Override
 			public Double getValue() {
-				SmartDashboard.putNumber("turn", getSetpoint());
 				return getSetpoint();
 			}
 

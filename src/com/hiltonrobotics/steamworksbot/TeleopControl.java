@@ -53,22 +53,21 @@ public class TeleopControl {
 		printStatuses();													//Print device statuses such as PDP voltage
 	}
 	
-	public static void printStatuses() {									//Console output for any statuses the drivers would need, currently lift mode
+	public static void printStatuses() {									//Dashboard output for any statuses for the drivers
 		DecimalFormat f = new DecimalFormat("#.###");
 		f.setRoundingMode(RoundingMode.HALF_UP);
 		
 		double pcx = Double.parseDouble(f.format(OI.controller.getX()));
 		double pcy = Double.parseDouble(f.format(OI.controller.getY()));
 		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
-		double ang = Double.parseDouble(f.format(OI.gyro.getAngle() % 360));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
 		if(liftStatus == 0) {
-			SmartDashboard.putString("Lift State", "Lock Robot");
-		} else if(liftStatus == 1) {
-			SmartDashboard.putString("List State",  "Lift Hook");
-		} else if(liftStatus == 2) {
 			SmartDashboard.putString("Lift State", "Lift Robot");
+		} else if(liftStatus == 1) {
+			SmartDashboard.putString("Lift State",  "Lock Robot");
+		} else if(liftStatus == 2) {
+			SmartDashboard.putString("Lift State", "Lift Hook");
 		}
 		
 		SmartDashboard.putNumber("PC X", pcx);
@@ -76,7 +75,6 @@ public class TeleopControl {
 		SmartDashboard.putNumber("Arm Speed", pct);
 		SmartDashboard.putString("Arm Direction", armDir);
 		SmartDashboard.putBoolean("Claw Status", clawOpen);
-		SmartDashboard.putNumber("Angle",  ang);
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
