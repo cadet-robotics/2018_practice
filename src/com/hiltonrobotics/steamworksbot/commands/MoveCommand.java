@@ -28,7 +28,7 @@ public class MoveCommand extends Command {
 		@Override
 		public double pidGet() {
 			//System.out.println("Getting distance");
-			double d = (OI.leftEncoder.getDistance() + OI.rightEncoder.getDistance()) / 2 / OI.PULSE_PER_ROT * Stats.ROTATION_DISTANCE_MOVED;
+			double d = (OI.leftEncoder.getDistance() + OI.rightEncoder.getDistance()) / 2 /*/ OI.PULSE_PER_ROT*/ * Stats.ROTATION_DISTANCE_MOVED;
 			//System.out.println("posErr: " + d);
 			return d;
 		}
@@ -91,6 +91,8 @@ public class MoveCommand extends Command {
 		requires(DriveSubsystem.getInstance());
 		OI.leftEncoder.reset();
 		OI.rightEncoder.reset();
+		OI.leftEncoder.setDistancePerPulse(OI.PULSE_PER_ROT);
+		OI.rightEncoder.setDistancePerPulse(OI.PULSE_PER_ROT);
 		pidPos.setSetpoint(dist);
 		//pidPos.setInputRange(-Math.abs(dist * 2), Math.abs(dist * 2));
 		pidPos.setAbsoluteTolerance(DEFAULT_TOLERANCE_POS);
