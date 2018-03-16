@@ -38,6 +38,7 @@ public class TeleopControl {
 	static boolean clawOpen = false;										//Weather or not the claw is open
 	static boolean clawOpenPrev = false;									//Previous state of the claw
 	static boolean newBButtonPress = true;									//Weather or not the current b-button press is a new one
+	static boolean newXButtonPress = true;									//Weather or not the current x-button press is a new one
 	static boolean altController = false;									//True if using alt controller
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
@@ -84,9 +85,20 @@ public class TeleopControl {
 	public static void setLiftPosition() {									//Set which winch is being used
 		if(OI.buttonB.get() && newBButtonPress) {							//Get separate presses of the B button
 			newBButtonPress = false;
-			liftStatus++;
+			if (liftStatus == LIFT_HOOK_STATE) {
+				liftStatus = LIFT_ROBOT_STATE;
+			} else if (liftStatus == LIFT_ROBOT_STATE) {
+				liftStatus = LIFT_HOOK_STATE;
+			}
 		} else if(!OI.buttonB.get() && !newBButtonPress) {
 			newBButtonPress = true;
+		}
+		
+		if(OI.buttonX.get() && newXButtonPress) {							//Get separate presses of the B button
+			newXButtonPress = false;
+			liftStatus = LOCK_ROBOT_STATE;
+		} else if(!OI.buttonX.get() && !newXButtonPress) {
+			newXButtonPress = true;
 		}
 		
 		if(liftStatusPrev != liftStatus) {									//Change solenoid if it needs to be changed, don't set every tick
