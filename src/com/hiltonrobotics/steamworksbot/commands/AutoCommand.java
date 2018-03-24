@@ -10,6 +10,7 @@ public class AutoCommand extends CommandGroup {
 	/*
 	 * place (0 = left, 1 = center, 2 = right): placement position out of 3 alliance robots
 	 * isOursRight (true = right, false = left): which side of the nearest scale we own
+	 * offset (-2, -1, 0, 1, 2): the offset from the side of the scale we want (where place = 0, isOursRight = true then offset = 2)
 	 */
 	
 	public AutoCommand(int placeIn, boolean isOursRightIn) {
