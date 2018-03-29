@@ -15,6 +15,8 @@ import com.hiltonrobotics.steamworksbot.commands.TeleopCommand;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -75,6 +77,19 @@ public class Robot extends TimedRobot {
 				return false;
 			}
 		});
+		
+		DigitalOutput d = new DigitalOutput(0);
+		(new Thread(() -> {
+			try {
+				while (!Thread.interrupted()) {
+					d.set(true);
+					Thread.sleep(500);
+					d.set(false);
+					Thread.sleep(500);
+				}
+			} catch (InterruptedException e) {}
+		})).start();
+		
 		//SmartDashboard.getEntry("rot");
 		//OI.gyro.calibrate();
 	}
