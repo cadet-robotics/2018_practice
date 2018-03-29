@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
 		c.start();
 	}
 
-	/**
+	/*
 	 * This function is called periodically during autonomous.
 	 */
 	

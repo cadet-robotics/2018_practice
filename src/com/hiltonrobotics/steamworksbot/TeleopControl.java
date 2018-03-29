@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,9 +62,9 @@ public class TeleopControl {
 		DecimalFormat f = new DecimalFormat("#.###");
 		f.setRoundingMode(RoundingMode.HALF_UP);
 		
-		double pcx = Double.parseDouble(f.format(OI.controller.getX()));
-		double pcy = Double.parseDouble(f.format(OI.controller.getY()));
-		double pct = Double.parseDouble(f.format(OI.controller.getThrottle()));
+		double pcx = Double.parseDouble(f.format(controlX));
+		double pcy = Double.parseDouble(f.format(controlY));
+		double pct = Double.parseDouble(f.format(controlThrottle));
 		String armDir = (pct >= 0) ? "Down" : "Up";
 		
 		if(liftStatus == LIFT_HOOK_STATE) {
@@ -121,11 +122,11 @@ public class TeleopControl {
 				OI.liftMotor3.setSpeed(-liftSpeed);
 			}
 		} else {															//Normal controller setup
-			if(OI.buttonLT.get() && OI.limitLift.get()) {												
+			if(OI.buttonLT.get() /*&& OI.limitLift.get()*/) {												
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
-			} else if(OI.buttonLB.get()) {									//Reverse lift
+			} else if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {									//Reverse lift
 				OI.liftMotor1.setSpeed(-liftSpeed);
 				OI.liftMotor2.setSpeed(-liftSpeed);
 				OI.liftMotor3.setSpeed(-liftSpeed);
@@ -180,14 +181,14 @@ public class TeleopControl {
 		}
 		
 		if(controlThrottle > 0) {											//Move arm
-			if(!OI.limitLow.get()) {										//Only allow movement in the direction opposite a pressed limit switch
-				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
-				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			if(!OI.limitHigh.get()) {										//Only allow movement in the direction opposite a pressed limit switch
+				OI.clawMotorL.setSpeed(controlThrottle * clawSpeed);
+				OI.clawMotorR.setSpeed(-(controlThrottle * clawSpeed));
 			}
 		} else {
-			if(!OI.limitHigh.get()) {
-				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
-				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
+			if(!OI.limitLow.get()) {
+				OI.clawMotorL.setSpeed(controlThrottle * clawSpeed);
+				OI.clawMotorR.setSpeed(-(controlThrottle * clawSpeed));
 			}
 		}
 		
@@ -265,6 +266,15 @@ public class TeleopControl {
 			}
 		} else {
 			rampPercent = 0.25;
+		}
+		
+		if(OI.buttonY.get()) {
+			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 1);
+			System.out.println("Rommbing");
+		} else {
+			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
 		}
 	}
 }
