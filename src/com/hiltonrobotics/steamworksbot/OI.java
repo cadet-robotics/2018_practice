@@ -75,6 +75,7 @@ public class OI {
 	public static DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	public static DigitalInput limitLift = new DigitalInput(7);							//Lift limit switch
+	public static DigitalInput limitCube = new DigitalInput(6);							//Limit switch for the claw (if there's a cube in)
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
@@ -82,6 +83,8 @@ public class OI {
 	public static VictorSP clawMotorR = new VictorSP(3);								//Motor to move the claw arm (right)
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
 	public static VictorSP liftMotor2 = new VictorSP(5);								//Motor to operate the lift (2)
+	public static VictorSP cubeMotorL = new VictorSP(7);								//Motor to take in/eject cubes (left)
+	public static VictorSP cubeMotorR = new VictorSP(8);								//Motor to take in/eject cubes (right)
 	public static DoubleSolenoid claw = new DoubleSolenoid(0, 1); 						//Double solenoid for the claw
 	public static Solenoid hookSol = new Solenoid(2);									//Lift solenoid 1
 	public static Solenoid winchSol = new Solenoid(3);									//Lift solenoid 2

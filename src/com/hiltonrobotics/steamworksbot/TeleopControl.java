@@ -35,18 +35,23 @@ public class TeleopControl {
 	static int dpad = 0;													//Value for the dpad 'angle'
 	static int liftStatus = LIFT_HOOK_STATE;								//Number for what state the lift is in
 	static int liftStatusPrev = -1;											//Previous state of the lift
+	static int ejectTimer = 0;												//Keep motors running for a bit to eject the cube
 	static boolean dpadUp = false;											//D-pad up button
 	static boolean dpadDown = false;										//D-pad down button
 	static boolean dpadLeft = false;										//D-pad left button
 	static boolean dpadRight = false;										//D-pad right button
 	static boolean clawOpen = false;										//Weather or not the claw is open
 	static boolean clawOpenPrev = false;									//Previous state of the claw
-	static boolean newBButtonPress = true;									//Weather or not the current b-button press is a new one
-	static boolean newXButtonPress = true;									//Weather or not the current x-button press is a new one
+	static boolean newBButtonPress = true;									//Weather or not the b-button being down is a new press
+	static boolean newXButtonPress = true;									//Weather or not the x-button being down is a new press
+	static boolean newAButtonPress = true;									//Weather or not the a-button being down is a new press
 	static boolean altController = false;									//True if using alt controller
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
+	static boolean gettingCube = false;										//True if the cube is being taken in
+	static boolean ejectingCube = false;									//True if the cube is being ejected
+	static boolean cubeIn = false;											//Weather or not there's a cube in the claw
 	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
@@ -55,7 +60,43 @@ public class TeleopControl {
 		setDriveMotors();													//Set drive motors
 		setLiftMotors();													//Set lift motors
 		setLiftPosition();
+		manageCube();
 		printStatuses();													//Print device statuses such as PDP voltage
+	}
+	
+	public static void manageCube() {										//Manage getting/ejecting cubes from claw
+		if(OI.buttonA.get() && newAButtonPress) {
+			newAButtonPress = false;
+			
+			if(cubeIn) {
+				ejectingCube = true;
+				ejectTimer = 20;
+			} else {
+				gettingCube = !gettingCube;
+			}
+		} else if(!OI.buttonA.get() && !newAButtonPress) {
+			newAButtonPress = true;
+		}
+		
+		if(gettingCube) {													//Take in cubes to claw
+			if(cubeIn) {
+				gettingCube = false;
+				OI.claw.set(DoubleSolenoid.Value.kForward);
+			}
+			
+			OI.cubeMotorL.setSpeed(-1);
+			OI.cubeMotorR.setSpeed(-1);
+		} else if(ejectingCube) {											//Eject cube from claw
+			if(ejectTimer == 0) {
+				ejectingCube = false;
+				OI.claw.set(DoubleSolenoid.Value.kReverse);
+			}
+			
+			OI.cubeMotorL.setSpeed(1);
+			OI.cubeMotorR.setSpeed(1);
+			
+			if(!cubeIn) ejectTimer--;
+		}
 	}
 	
 	public static void printStatuses() {									//Console output for any statuses the drivers would need, currently lift mode
@@ -216,6 +257,8 @@ public class TeleopControl {
 		OI.liftMotor1.setSpeed(0);
 		OI.liftMotor2.setSpeed(0);
 		OI.liftMotor3.setSpeed(0);
+		OI.cubeMotorL.setSpeed(0);
+		OI.cubeMotorR.setSpeed(0);
 	}
 	
 	public static void setInputs() {										//Sets variables at the start of a tick
@@ -267,6 +310,8 @@ public class TeleopControl {
 		} else {
 			rampPercent = 0.25;
 		}
+		
+		cubeIn = OI.limitCube.get();
 		
 		if(OI.buttonY.get()) {
 			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
