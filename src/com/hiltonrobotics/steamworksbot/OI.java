@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -86,6 +88,16 @@ public class OI {
 	public static Solenoid hookSol = new Solenoid(2);									//Lift solenoid 1
 	public static Solenoid winchSol = new Solenoid(3);									//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
+	
+	public static SpeedControllerGroup clawReceiveMotors;
+	static {
+		// Positive = inwards
+		SpeedController m1 = new VictorSP(-1);
+		SpeedController m2 = new VictorSP(-1);
+		m2.setInverted(true);
+		clawReceiveMotors = new SpeedControllerGroup(m1, m2);
+	}
+	public static DigitalInput receiveTrigger = new DigitalInput(-1);
 	
 	public static DigitalInput pos1 = new DigitalInput(4);
 	public static DigitalInput pos2 = new DigitalInput(5);
