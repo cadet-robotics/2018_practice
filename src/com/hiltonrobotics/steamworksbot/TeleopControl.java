@@ -42,9 +42,15 @@ public class TeleopControl {
 	static boolean dpadRight = false;										//D-pad right button
 	static boolean clawOpen = false;										//Weather or not the claw is open
 	static boolean clawOpenPrev = false;									//Previous state of the claw
-	static boolean newBButtonPress = true;									//Weather or not the b-button being down is a new press
-	static boolean newXButtonPress = true;									//Weather or not the x-button being down is a new press
-	static boolean newAButtonPress = true;									//Weather or not the a-button being down is a new press
+	static boolean newBButtonPress = true;									//Weather or not the b-button being pressed is a new press
+	static boolean newXButtonPress = true;									//Weather or not the x-button being pressed is a new press
+	static boolean newAButtonPress = true;									//Weather or not the a-button being pressed is a new press
+	static boolean newLBPress = true;										//Weather or not LB being pressed is a new press
+	static boolean newRBPress = true;										//Weather or not RB being pressed is a new press
+	static boolean newLTPress = true;										//Weather or not LT being pressed is a new press
+	static boolean newRTPress = true;										//Weather or not RT being pressed is a new press
+	static boolean LTPressed = false;										//Weather or not LT is pressed
+	static boolean RTPressed = false;										//Weather or not RT is pressed
 	static boolean altController = false;									//True if using alt controller
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
@@ -65,7 +71,7 @@ public class TeleopControl {
 	}
 	
 	public static void manageCube() {										//Manage getting/ejecting cubes from claw
-		if(OI.buttonA.get() && newAButtonPress) {
+		/*if(OI.buttonA.get() && newAButtonPress) {
 			newAButtonPress = false;
 			
 			if(cubeIn) {
@@ -76,12 +82,29 @@ public class TeleopControl {
 			}
 		} else if(!OI.buttonA.get() && !newAButtonPress) {
 			newAButtonPress = true;
+		}*/
+		
+		if(LTPressed && newLTPress) {
+			newLTPress = false;
+			
+			ejectingCube = true;
+			ejectTimer = 20;
+		} else if(!LTPressed && !newLTPress) {
+			newLTPress = true;
+		}
+		
+		if(OI.buttonRB.get() && newRBPress) {
+			newRBPress = false;
+			
+			gettingCube = true;
+		} else if(!OI.buttonRB.get() && !newRBPress) {
+			newRBPress = true;
 		}
 		
 		if(gettingCube) {													//Take in cubes to claw
 			if(cubeIn) {
 				gettingCube = false;
-				OI.claw.set(DoubleSolenoid.Value.kForward);
+				clawOpen = false;
 			}
 			
 			OI.cubeMotorL.setSpeed(-1);
@@ -89,7 +112,7 @@ public class TeleopControl {
 		} else if(ejectingCube) {											//Eject cube from claw
 			if(ejectTimer == 0) {
 				ejectingCube = false;
-				OI.claw.set(DoubleSolenoid.Value.kReverse);
+				clawOpen = true;
 			}
 			
 			OI.cubeMotorL.setSpeed(1);
@@ -167,7 +190,7 @@ public class TeleopControl {
 				OI.liftMotor1.setSpeed(liftSpeed);
 				OI.liftMotor2.setSpeed(liftSpeed);
 				OI.liftMotor3.setSpeed(liftSpeed);
-			} else if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {									//Reverse lift
+			} else if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {		//Reverse lift
 				OI.liftMotor1.setSpeed(-liftSpeed);
 				OI.liftMotor2.setSpeed(-liftSpeed);
 				OI.liftMotor3.setSpeed(-liftSpeed);
@@ -268,6 +291,9 @@ public class TeleopControl {
 		controlX = OI.controller.getRawAxis(0);
 		controlY = OI.controller.getRawAxis(1);
 		controlThrottle = OI.controller.getRawAxis(5);
+		
+		LTPressed = OI.controller.getRawAxis(2) > 0.01;
+		RTPressed = OI.controller.getRawAxis(3) > 0.01;
 		
 		dpad = OI.controller.getPOV();										//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
