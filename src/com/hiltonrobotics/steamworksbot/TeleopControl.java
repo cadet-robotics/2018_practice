@@ -71,32 +71,23 @@ public class TeleopControl {
 	}
 	
 	public static void manageCube() {										//Manage getting/ejecting cubes from claw
-		/*if(OI.buttonA.get() && newAButtonPress) {
-			newAButtonPress = false;
-			
-			if(cubeIn) {
-				ejectingCube = true;
-				ejectTimer = 20;
-			} else {
-				gettingCube = !gettingCube;
-			}
-		} else if(!OI.buttonA.get() && !newAButtonPress) {
-			newAButtonPress = true;
-		}*/
-		
-		if(LTPressed && newLTPress) {
+		if(LTPressed && newLTPress) {										//Set ejecting cube
 			newLTPress = false;
 			
-			ejectingCube = true;
-			ejectTimer = 20;
+			if(!gettingCube) {												//Only do one at a time
+				ejectingCube = true;
+				ejectTimer = 20;
+			}
 		} else if(!LTPressed && !newLTPress) {
 			newLTPress = true;
 		}
 		
-		if(OI.buttonRB.get() && newRBPress) {
+		if(OI.buttonRB.get() && newRBPress) {								//Set getting cube
 			newRBPress = false;
 			
-			gettingCube = true;
+			if(!ejectingCube) {												//Only do one at a time
+				gettingCube = true;
+			}
 		} else if(!OI.buttonRB.get() && !newRBPress) {
 			newRBPress = true;
 		}
