@@ -64,14 +64,14 @@ public class OI {
 	//Also this entire file is meant for a command based 2017 robot - It's outdated
 	public static Joystick controller = new Joystick(0);								//Primary driving controller
 	public static Joystick controller2 = new Joystick(1);								//Secondary controller
-	public static JoystickButton buttonA = new JoystickButton(controller, 2);			//A button input
-	public static JoystickButton buttonB = new JoystickButton(controller, 3);			//B button input
-	public static JoystickButton buttonX = new JoystickButton(controller, 1);			//X button input
+	public static JoystickButton buttonA = new JoystickButton(controller, 1);			//A button input
+	public static JoystickButton buttonB = new JoystickButton(controller, 2);			//B button input
+	public static JoystickButton buttonX = new JoystickButton(controller, 3);			//X button input
 	public static JoystickButton buttonY = new JoystickButton(controller, 4);			//Y button input
 	public static JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
 	public static JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
-	public static JoystickButton buttonLT = new JoystickButton(controller, 7);			//LT button input
-	public static JoystickButton buttonRT = new JoystickButton(controller, 8);			//RT button input
+	public static JoystickButton buttonLT = new JoystickButton(controller, 99);			//LT button input
+	public static JoystickButton buttonRT = new JoystickButton(controller, 99);			//RT button input
 	public static DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	public static DigitalInput limitLift = new DigitalInput(7);							//Lift limit switch

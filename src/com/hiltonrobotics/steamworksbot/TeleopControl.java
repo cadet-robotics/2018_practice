@@ -264,34 +264,10 @@ public class TeleopControl {
 	public static void setInputs() {										//Sets variables at the start of a tick
 		gameData = DriverStation.getInstance().getGameSpecificMessage();	//Get game data string
 		
-		if(altController) {													//Alternate controller setup
-			OI.controller = new Joystick(1);
-			controlX = OI.controller.getRawAxis(0);
-			controlY = OI.controller.getRawAxis(1);
-			OI.buttonA = new JoystickButton(OI.controller, 1);
-			OI.buttonB = new JoystickButton(OI.controller, 2);
-			OI.buttonLB = new JoystickButton(OI.controller, 5);
-			controlThrottle = OI.controller.getRawAxis(5);
-			clawOpen = (OI.controller.getRawAxis(3) > 0.1);
-		} else {															//Normal controller setup
-			OI.controller = new Joystick(0);
-			OI.controller2 = new Joystick(1);
-			if(twoControllers) {
-				OI.buttonLB = new JoystickButton(OI.controller2, 5);
-				OI.buttonLT = new JoystickButton(OI.controller2, 7);
-				OI.buttonB = new JoystickButton(OI.controller2, 3);
-				OI.buttonX = new JoystickButton(OI.controller2, 1);
-			} else {
-				OI.buttonLB = new JoystickButton(OI.controller, 5);
-				OI.buttonLT = new JoystickButton(OI.controller, 7);
-				OI.buttonB = new JoystickButton(OI.controller, 3);
-			}
-			OI.buttonA = new JoystickButton(OI.controller, 0);
-			controlX = OI.controller.getX();								//Get X-Axis
-			controlY = OI.controller.getY();								//Get Y-Axis
-			controlThrottle = OI.controller.getThrottle();					//Get Throttle-Axis
-			clawOpen = OI.buttonRT.get();									//Open claw when RT pressed
-		}
+		
+		controlX = OI.controller.getRawAxis(0);
+		controlY = OI.controller.getRawAxis(1);
+		controlThrottle = OI.controller.getRawAxis(5);
 		
 		dpad = OI.controller.getPOV();										//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
