@@ -1,2 +1,3 @@
 # 2018_practice
-starting/practice code for creating the code for a robot, uses the churchville robot
+
+The code for our robot. Its not practice code but the repo is older than the build season
