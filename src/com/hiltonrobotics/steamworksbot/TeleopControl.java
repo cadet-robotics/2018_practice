@@ -41,6 +41,8 @@ public class TeleopControl {
 	static boolean dpadRight = false;										//D-pad right button
 	static boolean clawOpen = false;										//Weather or not the claw is open
 	static boolean clawOpenPrev = false;									//Previous state of the claw
+	static boolean LTPressed = false;										//If LT is pressed
+	static boolean RTPressed = false;										//If RT is pressed
 	static boolean newBButtonPress = true;									//Weather or not the current b-button press is a new one
 	static boolean newXButtonPress = true;									//Weather or not the current x-button press is a new one
 	static boolean altController = false;									//True if using alt controller
@@ -221,34 +223,19 @@ public class TeleopControl {
 	public static void setInputs() {										//Sets variables at the start of a tick
 		gameData = DriverStation.getInstance().getGameSpecificMessage();	//Get game data string
 		
-		if(altController) {													//Alternate controller setup
-			OI.controller = new Joystick(1);
-			controlX = OI.controller.getRawAxis(0);
-			controlY = OI.controller.getRawAxis(1);
-			OI.buttonA = new JoystickButton(OI.controller, 1);
-			OI.buttonB = new JoystickButton(OI.controller, 2);
-			OI.buttonLB = new JoystickButton(OI.controller, 5);
-			controlThrottle = OI.controller.getRawAxis(5);
-			clawOpen = (OI.controller.getRawAxis(3) > 0.1);
-		} else {															//Normal controller setup
-			OI.controller = new Joystick(0);
-			OI.controller2 = new Joystick(1);
-			if(twoControllers) {
-				OI.buttonLB = new JoystickButton(OI.controller2, 5);
-				OI.buttonLT = new JoystickButton(OI.controller2, 7);
-				OI.buttonB = new JoystickButton(OI.controller2, 3);
-				OI.buttonX = new JoystickButton(OI.controller2, 1);
-			} else {
-				OI.buttonLB = new JoystickButton(OI.controller, 5);
-				OI.buttonLT = new JoystickButton(OI.controller, 7);
-				OI.buttonB = new JoystickButton(OI.controller, 3);
-			}
-			OI.buttonA = new JoystickButton(OI.controller, 0);
-			controlX = OI.controller.getX();								//Get X-Axis
-			controlY = OI.controller.getY();								//Get Y-Axis
-			controlThrottle = OI.controller.getThrottle();					//Get Throttle-Axis
-			clawOpen = OI.buttonRT.get();									//Open claw when RT pressed
-		}
+		OI.controller = new Joystick(0);
+		OI.controller2 = new Joystick(1);
+		OI.buttonLB = new JoystickButton(OI.controller2, 4);
+		//OI.buttonLT = new JoystickButton(OI.controller2, 7);
+		LTPressed = OI.controller2.getRawAxis(2) >= 0.1;
+		RTPressed = OI.controller.getRawAxis(3) >= 0.1;
+		OI.buttonB = new JoystickButton(OI.controller2, 1);
+		OI.buttonX = new JoystickButton(OI.controller2, 2);
+		OI.buttonA = new JoystickButton(OI.controller, 0);
+		controlX = OI.controller.getRawAxis(0);								//Get X-Axis
+		controlY = OI.controller.getRawAxis(1);								//Get Y-Axis
+		controlThrottle = OI.controller.getRawAxis(5);						//Get Throttle-Axis
+		clawOpen = RTPressed;												//Open claw when RT pressed
 		
 		dpad = OI.controller.getPOV();										//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
