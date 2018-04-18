@@ -35,16 +35,22 @@ public class TeleopControl {
 	static int dpad = 0;													//Value for the dpad 'angle'
 	static int liftStatus = LIFT_HOOK_STATE;								//Number for what state the lift is in
 	static int liftStatusPrev = -1;											//Previous state of the lift
+	static int cubeEjectTimer = 0;											//Value to allow the claw motors to run a little longer
 	static boolean dpadUp = false;											//D-pad up button
 	static boolean dpadDown = false;										//D-pad down button
 	static boolean dpadLeft = false;										//D-pad left button
 	static boolean dpadRight = false;										//D-pad right button
 	static boolean clawOpen = false;										//Weather or not the claw is open
 	static boolean clawOpenPrev = false;									//Previous state of the claw
-	static boolean LTPressed = false;										//If LT is pressed
-	static boolean RTPressed = false;										//If RT is pressed
-	static boolean newBButtonPress = true;									//Weather or not the current b-button press is a new one
-	static boolean newXButtonPress = true;									//Weather or not the current x-button press is a new one
+	static boolean gettingCube = false;										//Getting the cube or not
+	static boolean ejectingCube = false;									//Ejecting the cube or not
+	static boolean buttonLTPressed = false;									//If LT is pressed
+	static boolean buttonLT2Pressed = false;								//If LT is pressed on the other controller
+	static boolean buttonRTPressed = false;									//If RT is pressed
+	static boolean newBButtonPress = true;									//Weather or not the b-button being pressed is a new press
+	static boolean newXButtonPress = true;									//Weather or not the x-button being pressed is a new press
+	static boolean newRTPress = true;										//Weather or not RT being pressed is a new press
+	static boolean newRBPress = true;										//Weather or not RB being pressed is a new press
 	static boolean altController = false;									//True if using alt controller
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
@@ -56,7 +62,8 @@ public class TeleopControl {
 		setClaw();															//Sets claw/arm position
 		setDriveMotors();													//Set drive motors
 		setLiftMotors();													//Set lift motors
-		setLiftPosition();
+		setLiftPosition();													//Manages lift state
+		manageClaw();														//Manages semi-auto cube getting
 		printStatuses();													//Print device statuses such as PDP voltage
 	}
 	
@@ -80,6 +87,48 @@ public class TeleopControl {
 		SmartDashboard.putNumber("Arm Speed", pct);
 		SmartDashboard.putString("Arm Direction", armDir);
 		SmartDashboard.putBoolean("Claw Status", clawOpen);
+		
+		System.out.println(OI.limitCube.getVoltage());
+	}
+	
+	public static void manageClaw() {										//Manages the semi-automated cube-getting
+		/*
+		if(buttonRTPressed && newRTPress) {									//Set getting cube
+			newRTPress = false;
+			
+			if(!ejectingCube) {
+				gettingCube = !gettingCube;
+			}
+		} else if(!buttonRTPressed && !newRTPress) {
+			newRTPress = true;
+		}*/
+		
+		gettingCube = buttonRTPressed && !ejectingCube;
+		
+		if(OI.buttonRB.get() && newRBPress) {								//Set ejecting cube
+			newRBPress = false;
+			
+			ejectingCube = !gettingCube;
+			cubeEjectTimer = 20;
+		} else if(!OI.buttonRB.get() && !newRBPress) {
+			newRBPress = true;
+		}
+		
+		if(gettingCube) {													//Get cube
+			OI.cubeMotor.setSpeed(-1);
+		} else if(ejectingCube) {											//Eject cube
+			/*if(OI.limitCube.getVoltage() <= 1){
+				cubeEjectTimer = 20;
+			} else */if(cubeEjectTimer <= 0) {
+				ejectingCube = false;
+			}
+			
+			cubeEjectTimer--;
+			
+			OI.cubeMotor.setSpeed(1);
+		}
+		
+		
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -112,27 +161,15 @@ public class TeleopControl {
 		}
 	}
 	
-	public static void setLiftMotors() {									//Set lift motors
-		if(altController) {													//Alternate controller setup
-			if(OI.buttonLB.get() && OI.limitLift.get()) {
-				OI.liftMotor1.setSpeed(liftSpeed);
-				OI.liftMotor2.setSpeed(liftSpeed);
-				OI.liftMotor3.setSpeed(liftSpeed);
-			} else if(OI.controller.getRawAxis(2) > 0.1){					//Reverse lift
-				OI.liftMotor1.setSpeed(-liftSpeed);
-				OI.liftMotor2.setSpeed(-liftSpeed);
-				OI.liftMotor3.setSpeed(-liftSpeed);
-			}
-		} else {															//Normal controller setup
-			if(OI.buttonLT.get() /*&& OI.limitLift.get()*/) {												
-				OI.liftMotor1.setSpeed(liftSpeed);
-				OI.liftMotor2.setSpeed(liftSpeed);
-				OI.liftMotor3.setSpeed(liftSpeed);
-			} else if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {									//Reverse lift
-				OI.liftMotor1.setSpeed(-liftSpeed);
-				OI.liftMotor2.setSpeed(-liftSpeed);
-				OI.liftMotor3.setSpeed(-liftSpeed);
-			}
+	public static void setLiftMotors() {
+		if(buttonLTPressed /*&& OI.limitLift.get()*/) {												
+			OI.liftMotor1.setSpeed(liftSpeed);
+			OI.liftMotor2.setSpeed(liftSpeed);
+			OI.liftMotor3.setSpeed(liftSpeed);
+		} else if(OI.buttonLB.get() /*&& OI.limitLift.get()*/) {		//Reverse lift
+			OI.liftMotor1.setSpeed(-liftSpeed);
+			OI.liftMotor2.setSpeed(-liftSpeed);
+			OI.liftMotor3.setSpeed(-liftSpeed);
 		}
 	}
 	
@@ -182,15 +219,15 @@ public class TeleopControl {
 			clawOpenPrev = clawOpen;
 		}
 		
-		if(controlThrottle > 0) {											//Move arm
+		if(controlThrottle < 0) {											//Move arm where pulling the stick towards yourself lowers the arm
 			if(!OI.limitHigh.get()) {										//Only allow movement in the direction opposite a pressed limit switch
-				OI.clawMotorL.setSpeed(controlThrottle * clawSpeed);
-				OI.clawMotorR.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
 			}
 		} else {
 			if(!OI.limitLow.get()) {
-				OI.clawMotorL.setSpeed(controlThrottle * clawSpeed);
-				OI.clawMotorR.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorL.setSpeed(-(controlThrottle * clawSpeed));
+				OI.clawMotorR.setSpeed(controlThrottle * clawSpeed);
 			}
 		}
 		
@@ -218,6 +255,7 @@ public class TeleopControl {
 		OI.liftMotor1.setSpeed(0);
 		OI.liftMotor2.setSpeed(0);
 		OI.liftMotor3.setSpeed(0);
+		OI.cubeMotor.setSpeed(0);
 	}
 	
 	public static void setInputs() {										//Sets variables at the start of a tick
@@ -225,17 +263,18 @@ public class TeleopControl {
 		
 		OI.controller = new Joystick(0);
 		OI.controller2 = new Joystick(1);
-		OI.buttonLB = new JoystickButton(OI.controller2, 4);
+		OI.buttonLB = new JoystickButton(OI.controller2, 5);
 		//OI.buttonLT = new JoystickButton(OI.controller2, 7);
-		LTPressed = OI.controller2.getRawAxis(2) >= 0.1;
-		RTPressed = OI.controller.getRawAxis(3) >= 0.1;
-		OI.buttonB = new JoystickButton(OI.controller2, 1);
-		OI.buttonX = new JoystickButton(OI.controller2, 2);
-		OI.buttonA = new JoystickButton(OI.controller, 0);
+		buttonLTPressed = OI.controller2.getRawAxis(2) >= 0.1;
+		buttonLT2Pressed = OI.controller.getRawAxis(2) >= 0.1;
+		buttonRTPressed = OI.controller.getRawAxis(3) >= 0.1;
+		OI.buttonB = new JoystickButton(OI.controller2, 2);
+		OI.buttonX = new JoystickButton(OI.controller2, 3);
+		OI.buttonA = new JoystickButton(OI.controller, 1);
 		controlX = OI.controller.getRawAxis(0);								//Get X-Axis
 		controlY = OI.controller.getRawAxis(1);								//Get Y-Axis
 		controlThrottle = OI.controller.getRawAxis(5);						//Get Throttle-Axis
-		clawOpen = RTPressed;												//Open claw when RT pressed
+		clawOpen = buttonLT2Pressed;										//Open claw when RT pressed (Depricated with new system)
 		
 		dpad = OI.controller.getPOV();										//Get D-pad angle
 		dpadUp = (dpad == 0 || dpad == 315 || dpad == 45);					//Set D-pad sides to separate values
