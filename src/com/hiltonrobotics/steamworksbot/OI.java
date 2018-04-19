@@ -7,8 +7,11 @@
 
 package com.hiltonrobotics.steamworksbot;
 
+import java.math.BigDecimal;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -68,17 +71,23 @@ public class OI {
 	public static JoystickButton buttonB = new JoystickButton(controller, 2);			//B button input
 	public static JoystickButton buttonX = new JoystickButton(controller, 3);			//X button input
 	public static JoystickButton buttonY = new JoystickButton(controller, 4);			//Y button input
-	public static JoystickButton buttonLB = new JoystickButton(controller, 5);			//LB button input
+	public static JoystickButton buttonLB = new JoystickButton(controller2, 5);			//LB button input
 	public static JoystickButton buttonRB = new JoystickButton(controller, 6);			//RB button input
 	public static JoystickButton buttonLT = new JoystickButton(controller, 99);			//LT button input
 	public static JoystickButton buttonRT = new JoystickButton(controller, 99);			//RT button input
 	public static DigitalInput limitLow = new DigitalInput(9);							//Lower limit switch
 	public static DigitalInput limitHigh = new DigitalInput(8);							//Upper limit switch
 	public static DigitalInput limitLift = new DigitalInput(7);							//Lift limit switch
-	public static DigitalInput limitCube = new DigitalInput(6);							//Limit switch for the claw (if there's a cube in)
+	public static DigitalInput pos3 = new DigitalInput(6);			//Please comment the purpose of this
+	public static DigitalInput pos2 = new DigitalInput(5);			//Please comment the purpose of this
+	public static DigitalInput pos1 = new DigitalInput(4);			//Please comment the purpose of this
+	public static AnalogInput pos4 = new AnalogInput(0);			//Please comment the purpose of this
+	public static AnalogInput limitCube = new AnalogInput(1);							//Limit switch on the claw to detect cubes
+	public static AnalogInput frontLight = new AnalogInput(2);						//Adafruit on the front
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
+	public static Spark cubeMotor = new Spark(7);										//Motor to take in and eject cubes
 	public static VictorSP clawMotorL = new VictorSP(2);								//Motor to move the claw arm (left)
 	public static VictorSP clawMotorR = new VictorSP(3);								//Motor to move the claw arm (right)
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)
@@ -89,15 +98,10 @@ public class OI {
 	public static Solenoid hookSol = new Solenoid(2);									//Lift solenoid 1
 	public static Solenoid winchSol = new Solenoid(3);									//Lift solenoid 2
 	public static PowerDistributionPanel pdp = new PowerDistributionPanel();			//PDP board object
-	
-	public static DigitalInput pos1 = new DigitalInput(4);
-	public static DigitalInput pos2 = new DigitalInput(5);
-	public static DigitalInput pos3 = new DigitalInput(6);
-	public static AnalogInput pos4 = new AnalogInput(0);
-	
+	public static Encoder leftEncoder = new Encoder(1, 0); 								// Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
+	public static Encoder rightEncoder = new Encoder(3, 2); 							// Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
 	public static final double PULSE_PER_ROT = 1440;
-	public static Encoder leftEncoder = new Encoder(1, 0); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
-	public static Encoder rightEncoder = new Encoder(3, 2); // Channels are reversed, see http://www.andymark.com/product-p/am-2816a.htm
+	
 	static {
 		rightEncoder.setReverseDirection(true); // Right motor is inverted, so right encoder is inverted
 		/*Stats.getInstance().add(new StatElement<Double>() {
