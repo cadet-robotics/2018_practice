@@ -35,7 +35,8 @@ public class TeleopControl {
 	static int dpad = 0;													//Value for the dpad 'angle'
 	static int liftStatus = LIFT_HOOK_STATE;								//Number for what state the lift is in
 	static int liftStatusPrev = -1;											//Previous state of the lift
-	static int cubeEjectTimer = 0;											//Value to allow the claw motors to run a little longer
+	static int cubeEjectTimer = 0;											//Value to allow the claw motors to run after the button has been tapped
+	static int cubeIndicatorTimer = 0;										//Value to allow the cube indicator rumble for more than 1 tick
 	static boolean dpadUp = false;											//D-pad up button
 	static boolean dpadDown = false;										//D-pad down button
 	static boolean dpadLeft = false;										//D-pad left button
@@ -44,6 +45,7 @@ public class TeleopControl {
 	static boolean clawOpenPrev = false;									//Previous state of the claw
 	static boolean gettingCube = false;										//Getting the cube or not
 	static boolean ejectingCube = false;									//Ejecting the cube or not
+	static boolean cubeIndicated = false;									//Weather or not the cube being in the claw has been indicated
 	static boolean buttonLTPressed = false;									//If LT is pressed
 	static boolean buttonLT2Pressed = false;								//If LT is pressed on the other controller
 	static boolean buttonRTPressed = false;									//If RT is pressed
@@ -87,8 +89,6 @@ public class TeleopControl {
 		SmartDashboard.putNumber("Arm Speed", pct);
 		SmartDashboard.putString("Arm Direction", armDir);
 		SmartDashboard.putBoolean("Claw Status", clawOpen);
-		
-		System.out.println(OI.limitCube.getVoltage());
 	}
 	
 	public static void manageClaw() {										//Manages the semi-automated cube-getting
@@ -128,7 +128,13 @@ public class TeleopControl {
 			OI.cubeMotor.setSpeed(1);
 		}
 		
-		
+		if(OI.limitCube.getVoltage() >= 3 && clawOpen) {
+			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
+			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 1);				
+		} else {
+			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+		}
 	}
 	
 	public static void setLiftPosition() {									//Set which winch is being used
@@ -143,7 +149,9 @@ public class TeleopControl {
 		
 		if(OI.buttonX.get() && newXButtonPress) {							//Get separate presses of the B button
 			newXButtonPress = false;
-			liftStatus = LIFT_HOOK_STATE;
+			if(liftStatus != LIFT_HOOK_STATE) {
+				liftStatus = LIFT_HOOK_STATE;
+			}
 		} else if(!OI.buttonX.get() && !newXButtonPress) {
 			newXButtonPress = true;
 		}
@@ -292,15 +300,6 @@ public class TeleopControl {
 			}
 		} else {
 			rampPercent = 0.25;
-		}
-		
-		if(OI.buttonY.get()) {
-			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1);
-			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 1);
-			System.out.println("Rommbing");
-		} else {
-			OI.controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-			OI.controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
 		}
 	}
 }

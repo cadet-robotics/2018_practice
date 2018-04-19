@@ -83,7 +83,7 @@ public class OI {
 	public static DigitalInput pos1 = new DigitalInput(4);			//Please comment the purpose of this
 	public static AnalogInput pos4 = new AnalogInput(0);			//Please comment the purpose of this
 	public static AnalogInput limitCube = new AnalogInput(1);							//Limit switch on the claw to detect cubes
-	public static AnalogOutput frontLight = new AnalogOutput(2);						//Adafruit on the front
+	public static AnalogInput frontLight = new AnalogInput(2);						//Adafruit on the front
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
