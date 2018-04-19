@@ -13,9 +13,7 @@ public class AutoCommand extends CommandGroup {
 	 * offset (-2, -1, 0, 1, 2): the offset from the side of the scale we want (where place = 0, isOursRight = true then offset = 2)
 	 */
 	
-	public AutoCommand(int placeIn, boolean isOursRightIn) {
-		int place = placeIn;
-		boolean isOursRight = isOursRightIn;
+	public AutoCommand(int place, boolean isOursRight) {
 		int offset = (isOursRight ? 2 : 0) - place;
 		if (offset == 0) {
 			addSequential(new MoveCommand(30));								// 0-4

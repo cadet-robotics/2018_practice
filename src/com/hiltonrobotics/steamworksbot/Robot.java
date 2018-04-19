@@ -106,29 +106,12 @@ public class Robot extends TimedRobot {
 	 */
 	private String data;
 	private Command c;
+	private boolean hasInit = false;
 	
-	@Override
-	public void autonomousInit() {
-		//m_autonomousCommand = m_chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		
-		/*if (m_autonomousCommand != null) {
-			m_autonomousCommand.start();
-		}*/
-		
-		data = DriverStation.getInstance().getGameSpecificMessage();
-		System.out.println(data);
-		if (!data.matches("[LR][LR][LR]")) {
-			throw new IllegalArgumentException();
-		}
+	public boolean attemptInit() {
+		if (hasInit) return true;
+		data = DriverStation.getInstance().getGameSpecificMessage(); // Gets scale ownership data
+		if (!data.matches("[LR][LR][LR]")) return false;
 		//OI.calibrateGyroSafe();
 		
 		int mode;//DriverStation.getInstance().getLocation() - 1;
@@ -149,6 +132,26 @@ public class Robot extends TimedRobot {
 			c = new AutoCommand(mode, data.charAt(0) == 'R');
 		}
 		c.start();
+		return true;
+	}
+	
+	@Override
+	public void autonomousInit() {
+		//m_autonomousCommand = m_chooser.getSelected();
+
+		/*
+		 * String autoSelected = SmartDashboard.getString("Auto Selector",
+		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
+		 * = new MyAutoCommand(); break; case "Default Auto": default:
+		 * autonomousCommand = new ExampleCommand(); break; }
+		 */
+
+		// schedule the autonomous command (example)
+		
+		/*if (m_autonomousCommand != null) {
+			m_autonomousCommand.start();
+		}*/
+		hasInit = attemptInit();
 	}
 
 	/*
@@ -159,6 +162,7 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
+		hasInit = attemptInit();
 		if (alex == null) {
 			Scheduler.getInstance().run();
 		} else {
