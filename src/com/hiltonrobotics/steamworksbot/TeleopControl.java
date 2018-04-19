@@ -57,6 +57,9 @@ public class TeleopControl {
 	static boolean twoControllers = true;									//True if using two controllers
 	static boolean useX = false;											//Use Y-axis in movement (set each tick)
 	static boolean useY = false;											//Use X-axis in movement (set each tick)
+	static boolean gettingCube = false;										//True if the cube is being taken in
+	static boolean ejectingCube = false;									//True if the cube is being ejected
+	static boolean cubeIn = false;											//Weather or not there's a cube in the claw
 	
 	public static void runPeriodic() {
 		setInputs();														//Sets input variables
@@ -67,6 +70,49 @@ public class TeleopControl {
 		setLiftPosition();													//Manages lift state
 		manageClaw();														//Manages semi-auto cube getting
 		printStatuses();													//Print device statuses such as PDP voltage
+	}
+	
+	public static void manageCube() {										//Manage getting/ejecting cubes from claw
+		if(LTPressed && newLTPress) {										//Set ejecting cube
+			newLTPress = false;
+			
+			if(!gettingCube) {												//Only do one at a time
+				ejectingCube = true;
+				ejectTimer = 20;
+			}
+		} else if(!LTPressed && !newLTPress) {
+			newLTPress = true;
+		}
+		
+		if(OI.buttonRB.get() && newRBPress) {								//Set getting cube
+			newRBPress = false;
+			
+			if(!ejectingCube) {												//Only do one at a time
+				gettingCube = true;
+			}
+		} else if(!OI.buttonRB.get() && !newRBPress) {
+			newRBPress = true;
+		}
+		
+		if(gettingCube) {													//Take in cubes to claw
+			if(cubeIn) {
+				gettingCube = false;
+				clawOpen = false;
+			}
+			
+			OI.cubeMotorL.setSpeed(-1);
+			OI.cubeMotorR.setSpeed(-1);
+		} else if(ejectingCube) {											//Eject cube from claw
+			if(ejectTimer == 0) {
+				ejectingCube = false;
+				clawOpen = true;
+			}
+			
+			OI.cubeMotorL.setSpeed(1);
+			OI.cubeMotorR.setSpeed(1);
+			
+			if(!cubeIn) ejectTimer--;
+		}
 	}
 	
 	public static void printStatuses() {									//Console output for any statuses the drivers would need, currently lift mode
