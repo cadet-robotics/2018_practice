@@ -1,135 +1,40 @@
 package com.hiltonrobotics.steamworksbot.commands;
 
-import com.hiltonrobotics.steamworksbot.OI;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 
-public class AutoCommand extends Command {
+public class AutoCommand extends CommandGroup {
 	public static double timestamp = 0;
 	
 	/*
 	 * place (0 = left, 1 = center, 2 = right): placement position out of 3 alliance robots
 	 * isOursRight (true = right, false = left): which side of the nearest scale we own
+	 * offset (-2, -1, 0, 1, 2): the offset from the side of the scale we want (where place = 0, isOursRight = true then offset = 2)
 	 */
-	private int place;
-	private boolean isOursRight;
 	
-	public AutoCommand(int placeIn, boolean isOursRightIn) {
-		place = placeIn;
-		isOursRight = isOursRightIn;
-	}
-	
-	private Command subcommand = null;
-	private int state = -1;
-	public void execute() {
-		if (subcommand != null) {
-			if (subcommand.isRunning()) {
-				return;
-			} else {
-				System.out.println("Finished " + subcommand.getName() + " in ~" + subcommand.timeSinceInitialized() + " seconds");
-				subcommand = null;
-			}
-		}
-		++state;
+	public AutoCommand(int place, boolean isOursRight) {
 		int offset = (isOursRight ? 2 : 0) - place;
-		switch (state) {
-			case 0:
-				if (offset == 0) {
-					subcommand = new MoveCommand(30);
-					state = 4;
-				} else {
-					subcommand = new MoveCommand(8);
-				}
-				break;
-			case 1:
-				subcommand = new TurnCommand((offset > 0) ? -90 : 90, 0.5);
-				break;
-			case 2:
-				subcommand = new MoveCommand(Math.abs(offset) * 26);
-				break;
-			case 3:
-				subcommand = new TurnCommand((offset > 0) ? 90 : -90);
-				break;
-			case 4:
-				subcommand = new MoveCommand(22);
-				break;
-			case 5:
-				subcommand = new TurnCommand(isOursRight ? -90 : 90);
-				break;
-			case 6:
-				subcommand = new ArmExtremeCommand(true);
-				break;
-			case 7:
-				subcommand = new ShoveCommand(1.5, -0.4);//MoveCommand(-3);
-				break;
-			case 8:
-				subcommand = new ClawCommand(true);
-				break;
-			case 9:
-				subcommand = new MoveCommand(4);
-				break;
-			case 10:
-				subcommand = new ClawCommand(false);
-				break;
-			/*case 11:
-				subcommand = new ArmExtremeCommand(false);
-				break;*/
-			default:
-				this.cancel();
-				System.out.println("Ending autonomous...");
-				return;
+		if (offset == 0) {
+			addSequential(new MoveCommand(30));								// 0-4
+		} else {
+			addSequential(new MoveCommand(8));								// 0
+			addSequential(new TurnCommand((offset > 0) ? -90 : 90, 0.5));	// 1
+			addSequential(new MoveCommand(Math.abs(offset) * 26));			// 2
+			addSequential(new TurnCommand((offset > 0) ? 90 : -90));		// 3
+			addSequential(new MoveCommand(22));								// 4
 		}
-		subcommand.start();
-		
-		/*
-		if (timestamp < 0.5) {
-			OI.rightMotor.setSpeed(0.5);
-			OI.leftMotor.setSpeed(0.5);
-		}
-		timestamp += (Robot.instance == null) ? Robot.DEFAULT_PERIOD : Robot.instance.getPeriod();
-		*/
-	}
-	
-	public void initialize() {
-		super.initialize();
+		addSequential(new TurnCommand(isOursRight ? -90 : 90));				// 5
+		addSequential(new ArmExtremeCommand(true));							// 6
+		addSequential(new ShoveCommand(1.5, -0.4));							// 7
+		addSequential(new ClawCommand(true));								// 8
+		addSequential(new MoveCommand(4));									// 9
+		addSequential(new ClawCommand(false));								// 10
+		//addSequential(new ArmExtremeCommand(false));						// 11
 	}
 
 	@Override
 	protected boolean isFinished() {
-		return !DriverStation.getInstance().isAutonomous();
+		return !DriverStation.getInstance().isAutonomous() || super.isFinished();
 	}
-	
-	/*
-	public static double timestamp = 0;
-	public static boolean isInstanceOK = false;
-	
-	public static void runPeriodic() {
-		if (timestamp < 1.5) {
-			OI.rightMotor.setSpeed(-0.4);
-			OI.leftMotor.setSpeed(0.4);
-		} else {
-			OI.rightMotor.setSpeed(0);
-			OI.leftMotor.setSpeed(0);
-		}
-		try {
-			timestamp += (isInstanceOK) ? Robot.class.getDeclaredField("m_period").getDouble(Robot.instance) : Robot.DEFAULT_PERIOD;
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
-			timestamp += Robot.DEFAULT_PERIOD;
-			isInstanceOK = false;
-		}
-	}
-	
-	public static void init() {
-		if (Robot.instance != null) {
-			try {
-				Robot.class.getDeclaredField("m_period").getDouble(Robot.instance);
-				isInstanceOK = true;
-			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	*/
 }
