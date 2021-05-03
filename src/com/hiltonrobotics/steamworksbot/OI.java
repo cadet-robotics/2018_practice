@@ -87,7 +87,7 @@ public class OI {
 	public static Spark leftMotor = new Spark(0); 										//Left-side motor for movement
 	public static Spark rightMotor = new Spark(1);										//Right-side motor for movement
 	public static Spark liftMotor3 = new Spark(6);										//Motor to operate the lift (3)
-	public static Spark cubeMotor = new Spark(7);										//Motor to take in and eject cubes
+	public static Spark cubeMotor = new Spark(8);										//Motor to take in and eject cubes
 	public static VictorSP clawMotorL = new VictorSP(2);								//Motor to move the claw arm (left)
 	public static VictorSP clawMotorR = new VictorSP(3);								//Motor to move the claw arm (right)
 	public static VictorSP liftMotor1 = new VictorSP(4);								//Motor to operate the lift (1)

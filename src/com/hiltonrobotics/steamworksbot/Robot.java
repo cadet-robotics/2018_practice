@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
 		
 		if (mode == 3) {
 			//alex = new Autonomous_Alex();
-			c = new ShoveCommand(5, 0.4);
+			c = new ShoveCommand(3, 0.4);
 		} else {
 			c = new AutoCommand(mode, data.charAt(0) == 'R');
 		}
